@@ -1,0 +1,12 @@
+# Carpeta de salida de Maven (¡Súper importante ignorar esta!)
+/target/
+
+# Archivos de configuración de NetBeans
+/nbproject/private/
+/nbbuild/
+/nbdist/
+
+# Archivos temporales del sistema y del IDE
+.mtj.tmp/
+*.log
+*.class
