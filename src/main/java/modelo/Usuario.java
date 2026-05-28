@@ -70,4 +70,27 @@ public class Usuario {
     public String toString() {
         return nombreUsuario;
     }
+
+    public boolean validarCredenciales(String usuario, String contrasena) {
+        String sql = "SELECT contrasena FROM usuarios WHERE usuario = ?";
+        try (java.sql.Connection conn = conexion.Conexion.getConexion();
+             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, usuario);
+            try (java.sql.ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) return false; // usuario no existe
+
+                String hashGuardado = rs.getString("contrasena");
+
+                if (hashGuardado.startsWith("$2b$") || hashGuardado.startsWith("$2a$")) {
+                    String hashNormalizado = hashGuardado.replace("$2b$", "$2a$");
+                    return org.mindrot.jbcrypt.BCrypt.checkpw(contrasena, hashNormalizado);
+                } else {
+                    return hashGuardado.equals(contrasena);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error al validar credenciales: " + e.getMessage());
+            return false;
+        }
+    }
 }

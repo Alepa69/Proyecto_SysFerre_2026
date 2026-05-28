@@ -7,6 +7,7 @@ package controlador;
 import com.ues.group.vista.VistaLogin;
 import com.ues.group.vista.VistaMenuPrincipal;
 import javax.swing.JOptionPane;
+import modelo.Usuario;
 
 /**
  *
@@ -14,54 +15,67 @@ import javax.swing.JOptionPane;
  */
 public class ControladorLogin {
 
-    private final VistaLogin vista;
+    private final VistaLogin loginVista;
+    private VistaMenuPrincipal vista;
+    private final Usuario loginModelo;
 
-    private static final String USUARIO_TMP = "admin";
-    private static final String CLAVE_TMP = "admin";
+    public ControladorLogin(VistaLogin loginVista) {
+        this.loginVista = loginVista;
+        this.loginModelo = new Usuario();
+        this.vista = null;
 
-    public ControladorLogin(VistaLogin vista) {
-        this.vista = vista;
-        iniciarEventos();
+        // Para botón Enter
+        this.loginVista.getRootPane().setDefaultButton(this.loginVista.btnIngresar);
+        this.loginVista.btnIngresar.addActionListener(e -> login());
+        this.loginVista.btnCancelar.addActionListener(e -> System.exit(0));
     }
 
-    private void iniciarEventos() {
-        vista.btnIngresar.addActionListener(e -> ingresar());
-        vista.btnCancelar.addActionListener(e -> cancelar());
-
-        vista.txtContrasena.addActionListener(e -> ingresar());
+    public void iniciar() {
+        loginVista.setLocationRelativeTo(null);
+        loginVista.setVisible(true);
     }
 
-    private void ingresar() {
-        String usuario = vista.txtUsuario.getText().trim();
-        String clave = new String(vista.txtContrasena.getPassword());
+    private void login() {
+        String usuario = loginVista.txtUsuario.getText().trim();
+        String contrasena = new String(loginVista.txtContrasena.getPassword()).trim();
 
-        if (usuario.isEmpty() || clave.isEmpty()) {
-            JOptionPane.showMessageDialog(vista,
-                    "Debe ingresar usuario y contraseña.",
-                    "Campos vacíos", JOptionPane.WARNING_MESSAGE);
+        // Validar que los campos no estén vacíos
+        if (usuario.isEmpty() || contrasena.isEmpty()) {
+            mostrarError("Por favor ingrese usuario y contraseña.");
             return;
         }
 
-        if (USUARIO_TMP.equals(usuario) && CLAVE_TMP.equals(clave)) {
-            abrirMenu();
+        // Validar credenciales contra el modelo
+        if (loginModelo.validarCredenciales(usuario, contrasena)) {
+            cerrar();
+            vista = new VistaMenuPrincipal();
+            new ControladorMenu(vista);
+            vista.setLocationRelativeTo(null);
+            vista.setVisible(true);
         } else {
-            JOptionPane.showMessageDialog(vista,
-                    "Usuario o contraseña incorrectos.",
-                    "Acceso denegado", JOptionPane.ERROR_MESSAGE);
-            vista.txtContrasena.setText("");
-            vista.txtUsuario.requestFocus();
+            mostrarError("Usuario o contraseña incorrectos.");
+            loginVista.txtContrasena.setText("");
+            loginVista.txtContrasena.requestFocus();
         }
     }
 
-    private void abrirMenu() {
-        VistaMenuPrincipal menu = new VistaMenuPrincipal();
-        new ControladorMenu(menu);
-        menu.setLocationRelativeTo(null);
-        menu.setVisible(true);
-        vista.dispose();
+    private void mostrarError(String mensaje) {
+        JOptionPane.showMessageDialog(loginVista, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    private void cancelar() {
-        System.exit(0);
+    private void cerrar() {
+        loginVista.dispose();
+    }
+
+    public void cerrarSesion() {
+        if (vista != null) {
+            vista.dispose();
+            vista = null;
+        }
+        loginVista.txtUsuario.setText("");
+        loginVista.txtContrasena.setText("");
+        loginVista.txtUsuario.requestFocus();
+        loginVista.setLocationRelativeTo(null);
+        loginVista.setVisible(true);
     }
 }
