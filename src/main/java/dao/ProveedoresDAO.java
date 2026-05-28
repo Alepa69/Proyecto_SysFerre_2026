@@ -1,6 +1,8 @@
 package dao;
 
 import conexion.Conexion;
+import interfaz.IProveedoresDAO;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import modelo.Proveedor;
 
-public class ProveedoresDAO {
+public class ProveedoresDAO implements IProveedoresDAO {
 
     private static final String INSERT = "INSERT INTO proveedores (nombre, nit, telefono, correo, direccion) VALUES (?, ?, ?, ?, ?)";
     private static final String SELECT_ALL = "SELECT * FROM proveedores ORDER BY id_proveedores";

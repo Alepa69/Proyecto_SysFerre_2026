@@ -5,6 +5,8 @@
 package dao;
 
 import conexion.Conexion;
+import interfaz.IClienteDAO;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,7 +20,7 @@ import modelo.Cliente;
  *
  * @author natha
  */
-public class ClienteDAO {
+public class ClienteDAO implements IClienteDAO {
 
     private static final String INSERT = "INSERT INTO cliente (nombre, apellido) VALUES (?, ?)";
     private static final String SELECT_ALL = "SELECT * FROM cliente ORDER BY id_cliente";

@@ -1,6 +1,8 @@
 package dao;
 
 import conexion.Conexion;
+import interfaz.IProductoDAO;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,13 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 import modelo.Producto;
 
-public class ProductoDAO {
+public class ProductoDAO implements IProductoDAO {
 
-    private static final String INSERT      = "INSERT INTO productos (descripcion, tipo, precio, stock) VALUES (?, ?, ?, ?)";
-    private static final String SELECT_ALL  = "SELECT * FROM productos ORDER BY id_productos";
-    private static final String SELECT_ID   = "SELECT * FROM productos WHERE id_productos = ?";
-    private static final String UPDATE      = "UPDATE productos SET descripcion = ?, tipo = ?, precio = ?, stock = ? WHERE id_productos = ?";
-    private static final String DELETE      = "DELETE FROM productos WHERE id_productos = ?";
+    private static final String INSERT = "INSERT INTO productos (descripcion, tipo, precio, stock) VALUES (?, ?, ?, ?)";
+    private static final String SELECT_ALL = "SELECT * FROM productos ORDER BY id_productos";
+    private static final String SELECT_ID = "SELECT * FROM productos WHERE id_productos = ?";
+    private static final String UPDATE = "UPDATE productos SET descripcion = ?, tipo = ?, precio = ?, stock = ? WHERE id_productos = ?";
+    private static final String DELETE = "DELETE FROM productos WHERE id_productos = ?";
 
     public void insertar(Producto p) throws Exception {
         Connection conn = Conexion.getConexion();
