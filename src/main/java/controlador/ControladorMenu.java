@@ -91,7 +91,7 @@ private void llamarReportes() {
 
 private void llamarVentas() {
     VistaVentas vv = new VistaVentas();
-    //new ControladorVentas(vv);
+    new ControladorVentas(vv);
     vv.setVisible(true);
     //vista.dispose();
 }
