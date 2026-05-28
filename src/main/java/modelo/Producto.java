@@ -26,7 +26,7 @@ public class Producto {
         this.idProducto = idProducto;
         this.precio = precio;
         this.descripcion = descripcion;
-        this.tipo = tipo;
+        this.tipo = tipo;           
         this.stock = stock;
     }
 
