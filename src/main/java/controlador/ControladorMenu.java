@@ -88,12 +88,12 @@ public class ControladorMenu {
         // vista.dispose();
     }
 
-    private void llamarVentas() {
-        VistaVentas vv = new VistaVentas();
-        // new ControladorVentas(vv);
-        vv.setVisible(true);
-        // vista.dispose();
-    }
+private void llamarVentas() {
+    VistaVentas vv = new VistaVentas();
+    new ControladorVentas(vv);
+    vv.setVisible(true);
+    //vista.dispose();
+}
 
     private void salir() {
         System.exit(0);
