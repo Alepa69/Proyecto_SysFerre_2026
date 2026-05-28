@@ -16,6 +16,7 @@ public class Empleado {
     private String telefono;
     private String correo;
     private String direccion;
+    private Usuario usuario; // usuario asociado (opcional, para mostrar en tabla)
 
     public Empleado() {
     }
@@ -77,6 +78,15 @@ public class Empleado {
     public void setDireccion(String direccion) {
         this.direccion = direccion;
     }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+    
 
     @Override
     public String toString() {
