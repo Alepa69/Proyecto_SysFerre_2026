@@ -8,7 +8,7 @@ package modelo;
  *
  * @author natha
  */
-public class Empleado {
+public class Empleado implements Comparable<Empleado> {
 
     private int idEmpleado;
     private String nombre;
@@ -92,4 +92,11 @@ public class Empleado {
     public String toString() {
         return nombre + " " + apellido;
     }
+
+        @Override
+    public int compareTo(Empleado o) {
+        Empleado actual = this;
+        return actual.getApellido().compareTo(o.getApellido());
+    }
+
 }

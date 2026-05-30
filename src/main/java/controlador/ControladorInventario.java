@@ -1,6 +1,5 @@
 package controlador;
 
-import com.ues.group.arbolb.ArbolB;
 import com.ues.group.vista.VistaInventario;
 import dao.InventarioDAO;
 import java.io.File;
