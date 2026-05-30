@@ -8,7 +8,7 @@ package modelo;
  *
  * @author natha
  */
-public class Usuario {
+public class Usuario implements Comparable<Usuario> {
 
     private int idUsuario;
     private String nombreUsuario;
@@ -93,4 +93,11 @@ public class Usuario {
             return false;
         }
     }
+
+        @Override
+    public int compareTo(Usuario o) {
+        Usuario actual = this;
+        return actual.getNombreUsuario().compareTo(o.getNombreUsuario());
+    }
+
 }

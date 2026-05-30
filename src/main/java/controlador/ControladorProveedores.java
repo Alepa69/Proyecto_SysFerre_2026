@@ -1,8 +1,8 @@
 package controlador;
 
-import com.ues.group.arbolb.ArbolB;
 import com.ues.group.vista.VistaProveedores;
 
+import Arboles.ArbolBinario;
 import dao.ProveedoresDAO;
 import modelo.Proveedor;
 import javax.swing.table.DefaultTableModel;
@@ -84,7 +84,7 @@ public class ControladorProveedores {
         }
 
         // Construir árbol B con los IDs y buscar
-        ArbolB<Integer> arbol = new ArbolB<>(3);
+        ArbolBinario<Integer> arbol = new ArbolBinario<>();
         for (Proveedor p : listaBase) {
             arbol.insertar(p.getIdProveedor());
         }
@@ -154,7 +154,7 @@ public class ControladorProveedores {
 
     // Ordena por ID usando árbol B de enteros
     private List<Proveedor> ordenarPorId() {
-        ArbolB<Integer> arbol = new ArbolB<>(3);
+        ArbolBinario<Integer> arbol = new ArbolBinario<>();
         for (Proveedor p : listaBase) {
             arbol.insertar(p.getIdProveedor());
         }
@@ -172,7 +172,7 @@ public class ControladorProveedores {
 
     // Ordena por Nombre usando árbol B de Strings
     private List<Proveedor> ordenarPorNombre() {
-        ArbolB<String> arbol = new ArbolB<>(3);
+        ArbolBinario<String> arbol = new ArbolBinario<>();
         for (Proveedor p : listaBase) {
             arbol.insertar(p.getNombre().toLowerCase());
         }
@@ -190,7 +190,7 @@ public class ControladorProveedores {
 
     // Ordena por NIT usando árbol B de Strings
     private List<Proveedor> ordenarPorNit() {
-        ArbolB<String> arbol = new ArbolB<>(3);
+        ArbolBinario<String> arbol = new ArbolBinario<>();
         for (Proveedor p : listaBase) {
             arbol.insertar(p.getNit().toLowerCase());
         }

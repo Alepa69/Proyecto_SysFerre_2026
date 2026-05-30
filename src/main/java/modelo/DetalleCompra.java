@@ -11,7 +11,7 @@ import java.math.BigDecimal;
  * @author natha
  */
 
-public class DetalleCompra {
+public class DetalleCompra implements Comparable<DetalleCompra> {
 
     private int idDetalle;
     private int cantidad;
@@ -87,5 +87,11 @@ public class DetalleCompra {
     @Override
     public String toString() {
         return "Detalle #" + idDetalle + " - Cant: " + cantidad;
+    }
+
+        @Override
+    public int compareTo(DetalleCompra o) {
+        DetalleCompra actual = this;
+        return Integer.compare(actual.getIdDetalle(), o.getIdDetalle());
     }
 }

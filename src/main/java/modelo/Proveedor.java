@@ -8,7 +8,7 @@ package modelo;
  *
  * @author natha
  */
-public class Proveedor {
+public class Proveedor implements Comparable<Proveedor> {
 
     private int idProveedor;
     private String nombre;
@@ -81,5 +81,11 @@ public class Proveedor {
     @Override
     public String toString() {
         return nombre;
+    }
+
+    @Override
+    public int compareTo(Proveedor o) {
+        Proveedor actual = this;
+        return actual.getNombre().compareTo(o.getNombre());
     }
 }

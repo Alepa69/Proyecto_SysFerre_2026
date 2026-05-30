@@ -1,8 +1,9 @@
 
 package controlador;
 
-import com.ues.group.arbolb.ArbolB;
 import com.ues.group.vista.VistaEmpleados;
+
+import Arboles.ArbolBinario;
 import dao.EmpleadoDAO;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -21,7 +22,7 @@ public class ControladorEmpleado {
     private final EmpleadoDAO dao;
 
     // Árbol B en memoria – se reconstruye cada vez que cambian los datos
-    private ArbolB<NodoEmpleado> arbol;
+    private ArbolBinario<NodoEmpleado> arbol;
 
     public ControladorEmpleado(VistaEmpleados vista) {
         this.vista = vista;

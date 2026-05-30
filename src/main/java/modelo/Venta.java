@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author natha
  */
-public class Venta {
+public class Venta implements Comparable<Venta> {
 
     private int idVenta;
     private LocalDate fecha;
@@ -124,5 +124,11 @@ public class Venta {
     @Override
     public String toString() {
         return "Venta #" + idVenta + " - " + fecha;
+    }
+
+        @Override
+    public int compareTo(Venta o) {
+        Venta actual = this;
+        return actual.getFecha().compareTo(o.getFecha());
     }
 }
