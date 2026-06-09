@@ -2,7 +2,10 @@
 package com.ues.group;
 
 import com.ues.group.vista.VistaLogin;
+import com.ues.group.vista.VistaProveedores;
+
 import controlador.ControladorLogin;
+import controlador.ControladorProveedores;
 
 /**
  *
@@ -13,8 +16,7 @@ public class Proyecto_STD {
     public static void main(String[] args) {
         // Look and feel Nimbus (opcional, deja la app más bonita)
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info
-                    : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
@@ -29,5 +31,14 @@ public class Proyecto_STD {
             login.setLocationRelativeTo(null);
             login.setVisible(true);
         });
+
+        /* PARA PROBAR VISTAS INDIVIDUALES */
+
+        // java.awt.EventQueue.invokeLater(() -> {
+        // VistaProveedores login = new VistaProveedores();
+        // new ControladorProveedores(login);
+        // login.setLocationRelativeTo(null);
+        // login.setVisible(true);
+        // });
     }
 }
