@@ -1,373 +1,372 @@
-package controlador;
+// package controlador;
 
-import com.ues.group.vista.VistaInventario;
-import dao.InventarioDAO;
-import java.io.File;
-import java.io.FileWriter;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
-import modelo.Inventario;
+// import com.ues.group.vista.VistaInventario;
+// import dao.InventarioDAO;
+// import java.io.File;
+// import java.io.FileWriter;
+// import java.math.BigDecimal;
+// import java.util.ArrayList;
+// import java.util.Collections;
+// import java.util.List;
+// import javax.swing.JFileChooser;
+// import javax.swing.JOptionPane;
+// import javax.swing.table.DefaultTableModel;
+// import modelo.Inventario;
 
-/**
- *
- * @author mendo
- */
-public class ControladorInventario {
+// /**
+// *
+// * @author mendo
+// */
+// public class ControladorInventario {
 
-    private static final int ORDEN_ARBOL = 3;
+// private static final int ORDEN_ARBOL = 3;
 
-    private final VistaInventario vista;
-    private final InventarioDAO dao;
+// private final VistaInventario vista;
+// private final InventarioDAO dao;
 
-    public ControladorInventario(VistaInventario vista) {
-        this.vista = vista;
-        this.dao = new InventarioDAO();
+// public ControladorInventario(VistaInventario vista) {
+// this.vista = vista;
+// this.dao = new InventarioDAO();
 
-        iniciarEventos();
-        cargarTabla();
-    }
+// iniciarEventos();
+// cargarTabla();
+// }
 
-    private void iniciarEventos() {
+// private void iniciarEventos() {
 
-        vista.btnBuscar.addActionListener(e -> buscar());
+// vista.btnBuscar.addActionListener(e -> buscar());
 
-        vista.txtBuscar.addActionListener(e -> buscar());
+// vista.txtBuscar.addActionListener(e -> buscar());
 
-        vista.btnOrdenar.addActionListener(e -> ordenarTabla());
+// vista.btnOrdenar.addActionListener(e -> ordenarTabla());
 
-        
-        vista.btnActualizar.addActionListener(e -> {
-            vista.txtBuscar.setText("");
-            vista.cmbOrdenar.setSelectedIndex(0);
-            cargarTabla();
-        });
+// vista.btnActualizar.addActionListener(e -> {
+// vista.txtBuscar.setText("");
+// vista.cmbOrdenar.setSelectedIndex(0);
+// cargarTabla();
+// });
 
-        vista.btnExportar.addActionListener(e -> exportar());
+// vista.btnExportar.addActionListener(e -> exportar());
 
-        vista.btnRegresar.addActionListener(e -> vista.dispose());
-    }
+// vista.btnRegresar.addActionListener(e -> vista.dispose());
+// }
 
-    private void cargarTabla() {
-        try {
-            List<Inventario> lista = dao.listar();
-            llenarTabla(lista);
+// private void cargarTabla() {
+// try {
+// List<Inventario> lista = dao.listar();
+// llenarTabla(lista);
 
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(
-                    vista,
-                    "Error al cargar inventario: " + e.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-        }
-    }
+// } catch (Exception e) {
+// JOptionPane.showMessageDialog(
+// vista,
+// "Error al cargar inventario: " + e.getMessage(),
+// "Error",
+// JOptionPane.ERROR_MESSAGE
+// );
+// }
+// }
 
-    private void buscar() {
+// private void buscar() {
 
-        try {
+// try {
 
-            String texto = vista.txtBuscar.getText().trim().toLowerCase();
+// String texto = vista.txtBuscar.getText().trim().toLowerCase();
 
-            List<Inventario> lista = dao.listar();
-            List<Inventario> filtrada = new ArrayList<>();
+// List<Inventario> lista = dao.listar();
+// List<Inventario> filtrada = new ArrayList<>();
 
-            boolean esNumero = texto.matches("\\d+");
+// boolean esNumero = texto.matches("\\d+");
 
-            for (Inventario inv : lista) {
+// for (Inventario inv : lista) {
 
-                if (esNumero) {
+// if (esNumero) {
 
-                    if (inv.getIdInventario() == Integer.parseInt(texto)) {
-                        filtrada.add(inv);
-                    }
+// if (inv.getIdInventario() == Integer.parseInt(texto)) {
+// filtrada.add(inv);
+// }
 
-                } else {
+// } else {
 
-                    if (inv.getNombreProducto() != null
-                            && inv.getNombreProducto()
-                                    .toLowerCase()
-                                    .contains(texto)) {
+// if (inv.getNombreProducto() != null
+// && inv.getNombreProducto()
+// .toLowerCase()
+// .contains(texto)) {
 
-                        filtrada.add(inv);
-                    }
-                }
-            }
+// filtrada.add(inv);
+// }
+// }
+// }
 
-            llenarTabla(filtrada);
+// llenarTabla(filtrada);
 
-        } catch (Exception e) {
+// } catch (Exception e) {
 
-            JOptionPane.showMessageDialog(
-                    vista,
-                    "Error al buscar: " + e.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-        }
-    }
+// JOptionPane.showMessageDialog(
+// vista,
+// "Error al buscar: " + e.getMessage(),
+// "Error",
+// JOptionPane.ERROR_MESSAGE
+// );
+// }
+// }
 
-    private void ordenarTabla() {
+// private void ordenarTabla() {
 
-        try {
+// try {
 
-            List<Inventario> lista = dao.listar();
+// List<Inventario> lista = dao.listar();
 
-            String criterio = vista.cmbOrdenar.getSelectedItem() == null
-                    ? ""
-                    : vista.cmbOrdenar.getSelectedItem().toString();
+// String criterio = vista.cmbOrdenar.getSelectedItem() == null
+// ? ""
+// : vista.cmbOrdenar.getSelectedItem().toString();
 
-            List<Inventario> ordenada = ordenarConArbolB(lista, criterio);
+// List<Inventario> ordenada = ordenarConArbolB(lista, criterio);
 
-            llenarTabla(ordenada);
+// llenarTabla(ordenada);
 
-        } catch (Exception e) {
+// } catch (Exception e) {
 
-            JOptionPane.showMessageDialog(
-                    vista,
-                    "Error al ordenar: " + e.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-        }
-    }
+// JOptionPane.showMessageDialog(
+// vista,
+// "Error al ordenar: " + e.getMessage(),
+// "Error",
+// JOptionPane.ERROR_MESSAGE
+// );
+// }
+// }
 
-    private List<Inventario> ordenarConArbolB(
-            List<Inventario> lista,
-            String criterio
-    ) {
+// private List<Inventario> ordenarConArbolB(
+// List<Inventario> lista,
+// String criterio
+// ) {
 
-        ArbolB<NodoInventario> arbol = new ArbolB<>(ORDEN_ARBOL);
+// ArbolB<NodoInventario> arbol = new ArbolB<>(ORDEN_ARBOL);
 
-        for (Inventario inv : lista) {
-            arbol.insertar(new NodoInventario(inv, criterio));
-        }
+// for (Inventario inv : lista) {
+// arbol.insertar(new NodoInventario(inv, criterio));
+// }
 
-        List<Inventario> resultado = new ArrayList<>();
+// List<Inventario> resultado = new ArrayList<>();
 
-        for (NodoInventario nodo : arbol.recorridoEnOrden()) {
-            resultado.add(nodo.inventario);
-        }
+// for (NodoInventario nodo : arbol.recorridoEnOrden()) {
+// resultado.add(nodo.inventario);
+// }
 
-        if ("Stock Descendente".equals(criterio)) {
-            Collections.reverse(resultado);
-        }
+// if ("Stock Descendente".equals(criterio)) {
+// Collections.reverse(resultado);
+// }
 
-        return resultado;
-    }
+// return resultado;
+// }
 
-    private void llenarTabla(List<Inventario> lista) {
+// private void llenarTabla(List<Inventario> lista) {
 
-        DefaultTableModel modelo
-                = (DefaultTableModel) vista.tblInventario.getModel();
+// DefaultTableModel modelo
+// = (DefaultTableModel) vista.tblInventario.getModel();
 
-        modelo.setRowCount(0);
+// modelo.setRowCount(0);
 
-        for (Inventario inv : lista) {
+// for (Inventario inv : lista) {
 
-            modelo.addRow(new Object[]{
-                inv.getIdInventario(),
-                inv.getIdProducto(),
-                inv.getNombreProducto(),
-                inv.getPrecioUnitario(),
-                inv.getDescripcion(),
-                inv.getStockDisponible()
-            });
-        }
-    }
+// modelo.addRow(new Object[]{
+// inv.getIdInventario(),
+// inv.getIdProducto(),
+// inv.getNombreProducto(),
+// inv.getPrecioUnitario(),
+// inv.getDescripcion(),
+// inv.getStockDisponible()
+// });
+// }
+// }
 
-    private void exportar() {
+// private void exportar() {
 
-        DefaultTableModel modelo
-                = (DefaultTableModel) vista.tblInventario.getModel();
+// DefaultTableModel modelo
+// = (DefaultTableModel) vista.tblInventario.getModel();
 
-        if (modelo.getRowCount() == 0) {
+// if (modelo.getRowCount() == 0) {
 
-            JOptionPane.showMessageDialog(
-                    vista,
-                    "No hay datos para exportar.",
-                    "Exportar",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
+// JOptionPane.showMessageDialog(
+// vista,
+// "No hay datos para exportar.",
+// "Exportar",
+// JOptionPane.INFORMATION_MESSAGE
+// );
 
-            return;
-        }
+// return;
+// }
 
-        JFileChooser chooser = new JFileChooser();
+// JFileChooser chooser = new JFileChooser();
 
-        chooser.setDialogTitle("Guardar inventario como CSV");
-        chooser.setSelectedFile(new File("inventario.csv"));
+// chooser.setDialogTitle("Guardar inventario como CSV");
+// chooser.setSelectedFile(new File("inventario.csv"));
 
-        if (chooser.showSaveDialog(vista)
-                != JFileChooser.APPROVE_OPTION) {
-            return;
-        }
+// if (chooser.showSaveDialog(vista)
+// != JFileChooser.APPROVE_OPTION) {
+// return;
+// }
 
-        File archivo = chooser.getSelectedFile();
+// File archivo = chooser.getSelectedFile();
 
-        if (!archivo.getName().toLowerCase().endsWith(".csv")) {
+// if (!archivo.getName().toLowerCase().endsWith(".csv")) {
 
-            archivo = new File(
-                    archivo.getAbsolutePath() + ".csv"
-            );
-        }
+// archivo = new File(
+// archivo.getAbsolutePath() + ".csv"
+// );
+// }
 
-        try (FileWriter fw = new FileWriter(archivo)) {
+// try (FileWriter fw = new FileWriter(archivo)) {
 
-            int columnas = modelo.getColumnCount();
+// int columnas = modelo.getColumnCount();
 
-            // Encabezados
-            for (int c = 0; c < columnas; c++) {
+// // Encabezados
+// for (int c = 0; c < columnas; c++) {
 
-                fw.append(escapar(modelo.getColumnName(c)));
+// fw.append(escapar(modelo.getColumnName(c)));
 
-                if (c < columnas - 1) {
-                    fw.append(',');
-                }
-            }
+// if (c < columnas - 1) {
+// fw.append(',');
+// }
+// }
 
-            fw.append('\n');
+// fw.append('\n');
 
-            // Filas
-            for (int f = 0; f < modelo.getRowCount(); f++) {
+// // Filas
+// for (int f = 0; f < modelo.getRowCount(); f++) {
 
-                for (int c = 0; c < columnas; c++) {
+// for (int c = 0; c < columnas; c++) {
 
-                    Object valor = modelo.getValueAt(f, c);
+// Object valor = modelo.getValueAt(f, c);
 
-                    fw.append(
-                            escapar(valor == null
-                                    ? ""
-                                    : valor.toString())
-                    );
+// fw.append(
+// escapar(valor == null
+// ? ""
+// : valor.toString())
+// );
 
-                    if (c < columnas - 1) {
-                        fw.append(',');
-                    }
-                }
+// if (c < columnas - 1) {
+// fw.append(',');
+// }
+// }
 
-                fw.append('\n');
-            }
+// fw.append('\n');
+// }
 
-            JOptionPane.showMessageDialog(
-                    vista,
-                    "Inventario exportado a:\n"
-                    + archivo.getAbsolutePath(),
-                    "Exportar",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
+// JOptionPane.showMessageDialog(
+// vista,
+// "Inventario exportado a:\n"
+// + archivo.getAbsolutePath(),
+// "Exportar",
+// JOptionPane.INFORMATION_MESSAGE
+// );
 
-        } catch (Exception e) {
+// } catch (Exception e) {
 
-            JOptionPane.showMessageDialog(
-                    vista,
-                    "No se pudo exportar: " + e.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-        }
-    }
+// JOptionPane.showMessageDialog(
+// vista,
+// "No se pudo exportar: " + e.getMessage(),
+// "Error",
+// JOptionPane.ERROR_MESSAGE
+// );
+// }
+// }
 
-    private String escapar(String valor) {
+// private String escapar(String valor) {
 
-        if (valor.contains(",")
-                || valor.contains("\"")
-                || valor.contains("\n")) {
+// if (valor.contains(",")
+// || valor.contains("\"")
+// || valor.contains("\n")) {
 
-            return "\""
-                    + valor.replace("\"", "\"\"")
-                    + "\"";
-        }
+// return "\""
+// + valor.replace("\"", "\"\"")
+// + "\"";
+// }
 
-        return valor;
-    }
+// return valor;
+// }
 
-    private static class NodoInventario
-            implements Comparable<NodoInventario> {
+// private static class NodoInventario
+// implements Comparable<NodoInventario> {
 
-        final Inventario inventario;
-        final String criterio;
+// final Inventario inventario;
+// final String criterio;
 
-        NodoInventario(Inventario inventario, String criterio) {
-            this.inventario = inventario;
-            this.criterio = criterio;
-        }
+// NodoInventario(Inventario inventario, String criterio) {
+// this.inventario = inventario;
+// this.criterio = criterio;
+// }
 
-        @Override
-        public int compareTo(NodoInventario otro) {
+// @Override
+// public int compareTo(NodoInventario otro) {
 
-            int c;
+// int c;
 
-            switch (criterio) {
+// switch (criterio) {
 
-                case "Nombre A-Z" ->
+// case "Nombre A-Z" ->
 
-                    c = compararTexto(
-                            inventario.getNombreProducto(),
-                            otro.inventario.getNombreProducto()
-                    );
+// c = compararTexto(
+// inventario.getNombreProducto(),
+// otro.inventario.getNombreProducto()
+// );
 
-                case "Precio" ->
+// case "Precio" ->
 
-                    c = compararPrecio(
-                            inventario.getPrecioUnitario(),
-                            otro.inventario.getPrecioUnitario()
-                    );
+// c = compararPrecio(
+// inventario.getPrecioUnitario(),
+// otro.inventario.getPrecioUnitario()
+// );
 
-                case "Stock Ascendente", "Stock Descendente" ->
+// case "Stock Ascendente", "Stock Descendente" ->
 
-                    c = Integer.compare(
-                            inventario.getStockDisponible(),
-                            otro.inventario.getStockDisponible()
-                    );
+// c = Integer.compare(
+// inventario.getStockDisponible(),
+// otro.inventario.getStockDisponible()
+// );
 
-                default ->
+// default ->
 
-                    c = Integer.compare(
-                            inventario.getIdInventario(),
-                            otro.inventario.getIdInventario()
-                    );
-            }
+// c = Integer.compare(
+// inventario.getIdInventario(),
+// otro.inventario.getIdInventario()
+// );
+// }
 
-            if (c == 0) {
+// if (c == 0) {
 
-                c = Integer.compare(
-                        inventario.getIdInventario(),
-                        otro.inventario.getIdInventario()
-                );
-            }
+// c = Integer.compare(
+// inventario.getIdInventario(),
+// otro.inventario.getIdInventario()
+// );
+// }
 
-            return c;
-        }
+// return c;
+// }
 
-        private int compararTexto(String a, String b) {
+// private int compararTexto(String a, String b) {
 
-            if (a == null) {
-                a = "";
-            }
+// if (a == null) {
+// a = "";
+// }
 
-            if (b == null) {
-                b = "";
-            }
+// if (b == null) {
+// b = "";
+// }
 
-            return a.compareToIgnoreCase(b);
-        }
+// return a.compareToIgnoreCase(b);
+// }
 
-        private int compararPrecio(BigDecimal a, BigDecimal b) {
+// private int compararPrecio(BigDecimal a, BigDecimal b) {
 
-            if (a == null) {
-                a = BigDecimal.ZERO;
-            }
+// if (a == null) {
+// a = BigDecimal.ZERO;
+// }
 
-            if (b == null) {
-                b = BigDecimal.ZERO;
-            }
+// if (b == null) {
+// b = BigDecimal.ZERO;
+// }
 
-            return a.compareTo(b);
-        }
-    }
-}
+// return a.compareTo(b);
+// }
+// }
+// }
