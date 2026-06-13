@@ -1,4 +1,7 @@
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package modelo;
 
 import java.math.BigDecimal;
@@ -19,9 +22,9 @@ public class Venta implements Comparable<Venta> {
     private BigDecimal total;
     private int idEmpleado;
     private int idCliente;
-    private Empleado empleado;   // obj empl
-    private Cliente cliente;     // obj clientw
-    private List<DetalleVenta> detalles; // lista de detalles ventas
+    private Empleado empleado;   // objeto relacionado (opcional)
+    private Cliente cliente;     // objeto relacionado (opcional)
+    private List<DetalleVenta> detalles; // lista de detalles (opcional)
 
     public Venta() {
     }
@@ -123,12 +126,9 @@ public class Venta implements Comparable<Venta> {
         return "Venta #" + idVenta + " - " + fecha;
     }
 
-    @Override
+        @Override
     public int compareTo(Venta o) {
-        // Ordenar por fecha, luego por ID si la fecha es igual
-        int cmp = this.fecha.compareTo(o.getFecha());
-        if (cmp != 0) return cmp;
-        return Integer.compare(this.idVenta, o.getIdVenta());
+        Venta actual = this;
+        return actual.getFecha().compareTo(o.getFecha());
     }
-    
 }

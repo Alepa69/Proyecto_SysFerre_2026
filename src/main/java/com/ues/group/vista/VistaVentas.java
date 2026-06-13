@@ -326,7 +326,7 @@ public class VistaVentas extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton btnAgregar;
-    public javax.swing.JButton btnBack;
+    private javax.swing.JButton btnBack;
     public javax.swing.JButton btnCancelar;
     public javax.swing.JButton btnImprimir;
     public javax.swing.JButton btnQuitar;

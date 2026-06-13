@@ -1,9 +1,12 @@
-
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package dao;
 
-import com.ues.group.arbolb.ArbolBusqueda;
 import conexion.Conexion;
-import interfazDao.IClienteDAO;
+import interfaz.IClienteDAO;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,15 +20,14 @@ import modelo.Cliente;
  *
  * @author natha
  */
-public class ClienteDAO implements IClienteDAO{
+public class ClienteDAO implements IClienteDAO {
 
-    private static final String INSERT     = "INSERT INTO cliente (nombre, apellido) VALUES (?, ?)";
+    private static final String INSERT = "INSERT INTO cliente (nombre, apellido) VALUES (?, ?)";
     private static final String SELECT_ALL = "SELECT * FROM cliente ORDER BY id_cliente";
-    private static final String SELECT_ID  = "SELECT * FROM cliente WHERE id_cliente = ?";
-    private static final String UPDATE     = "UPDATE cliente SET nombre = ?, apellido = ? WHERE id_cliente = ?";
-    private static final String DELETE     = "DELETE FROM cliente WHERE id_cliente = ?";
+    private static final String SELECT_ID = "SELECT * FROM cliente WHERE id_cliente = ?";
+    private static final String UPDATE = "UPDATE cliente SET nombre = ?, apellido = ? WHERE id_cliente = ?";
+    private static final String DELETE = "DELETE FROM cliente WHERE id_cliente = ?";
 
-    @Override
     public void insertar(Cliente c) throws Exception {
         Connection conn = Conexion.getConexion();
         try {
@@ -43,7 +45,6 @@ public class ClienteDAO implements IClienteDAO{
         }
     }
 
-    @Override
     public void actualizar(Cliente c) throws Exception {
         Connection conn = Conexion.getConexion();
         try {
@@ -62,7 +63,6 @@ public class ClienteDAO implements IClienteDAO{
         }
     }
 
-    @Override
     public void eliminar(int idCliente) throws Exception {
         Connection conn = Conexion.getConexion();
         try {
@@ -79,9 +79,8 @@ public class ClienteDAO implements IClienteDAO{
         }
     }
 
-    @Override
-    public ArbolBusqueda<Cliente> listar() throws Exception {
-        ArbolBusqueda<Cliente> arbol = new ArbolBusqueda<>();
+    public List<Cliente> listar() throws Exception {
+        List<Cliente> lista = new ArrayList<>();
         Connection conn = Conexion.getConexion();
         PreparedStatement ps = conn.prepareStatement(SELECT_ALL);
         ResultSet rs = ps.executeQuery();
@@ -90,13 +89,12 @@ public class ClienteDAO implements IClienteDAO{
             c.setIdCliente(rs.getInt("id_cliente"));
             c.setNombre(rs.getString("nombre"));
             c.setApellido(rs.getString("apellido"));
-            arbol.insertar(c);   // se inserta ordenado por nombre (compareTo)
+            lista.add(c);
         }
         conn.close();
-        return arbol;
+        return lista;
     }
 
-    @Override
     public Cliente buscar(int idCliente) throws Exception {
         Connection conn = Conexion.getConexion();
         PreparedStatement ps = conn.prepareStatement(SELECT_ID);
