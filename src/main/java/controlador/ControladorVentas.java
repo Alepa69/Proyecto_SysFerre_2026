@@ -1,9 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package controlador;
 
+import com.ues.group.arbolb.ArbolBusqueda;
 import com.ues.group.vista.VistaVentas;
 import dao.ClienteDAO;
 import dao.InventarioDAO;
@@ -31,10 +29,10 @@ public class ControladorVentas {
     private final ClienteDAO clienteDAO;
     private final InventarioDAO inventarioDAO;
 
-    /** Caché de inventarios para acceder al idProducto al agregar detalles. */
+    // Caché de inventarios para acceder al idProducto al agregar detalles
     private List<Inventario> inventariosCache = new ArrayList<>();
 
-    /** Lista temporal de detalles mientras se arma la venta. */
+    //Lista temporal de detalles mientras se arma la venta
     private final List<DetalleVenta> detallesTemp = new ArrayList<>();
 
     public ControladorVentas(VistaVentas vista) {
@@ -48,11 +46,11 @@ public class ControladorVentas {
     }
 
     private void inicializarFormulario() {
-        // Fecha y hora actuales (editables por si el usuario necesita corregirlas)
+        // Fecha y hora actuales
         vista.txtFecha.setText(LocalDate.now().toString());
         vista.txtHora.setText(LocalTime.now().withNano(0).toString());
 
-        // SOLO estos dos campos son de solo lectura (los calcula el sistema)
+        // SOLO estos dos campos son de solo lectura calc sistema
         vista.txtSubtotal.setEditable(false);
         vista.txtTotal.setEditable(false);
 
@@ -73,24 +71,40 @@ public class ControladorVentas {
         vista.btnQuitar.addActionListener(e -> quitarDetalle());
         vista.btnRegistrar.addActionListener(e -> registrarVenta());
         vista.btnCancelar.addActionListener(e -> cancelar());
-        // vista.btnBack.addActionListener(e -> volverMenu());
-        vista.btnImprimir
-                .addActionListener(e -> JOptionPane.showMessageDialog(vista, "Función de impresión en desarrollo."));
+        vista.btnBack.addActionListener(e -> volverMenu());
+        vista.btnImprimir.addActionListener(e
+                -> JOptionPane.showMessageDialog(vista, "Función de impresión en desarrollo.")
+        );
     }
 
     private void cargarClientes() {
         vista.cmbCliente.removeAllItems();
         vista.cmbCliente.addItem("-- Seleccione --");
         try {
-            List<Cliente> clientes = clienteDAO.listar();
-            for (Cliente c : clientes) {
-                vista.cmbCliente.addItem(
-                        c.getIdCliente() + " - " + c.getNombre() + " " + c.getApellido());
+            ArbolBusqueda<Cliente> arbol = clienteDAO.listar();
+            ArrayList<Cliente> lista = arbol.IND();
+
+            if (lista.isEmpty()) {
+                JOptionPane.showMessageDialog(vista,
+                        "No hay clientes registrados en la base de datos.",
+                        "Sin datos", JOptionPane.WARNING_MESSAGE);
+                return;
             }
+
+            for (Cliente x : lista) {
+                Cliente c = (Cliente) x;
+                vista.cmbCliente.addItem(
+                        c.getIdCliente() + " - " + c.getNombre() + " " + c.getApellido()
+                );
+            }
+
         } catch (Exception e) {
+            // Muestra el error COMPLETO con causa raíz
             JOptionPane.showMessageDialog(vista,
-                    "Error al cargar clientes: " + e.getMessage(),
+                    "Error al cargar clientes:\n" + e.getClass().getSimpleName()
+                    + ": " + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace(); // ver en consola de NetBeans
         }
     }
 
@@ -99,22 +113,28 @@ public class ControladorVentas {
         vista.cmbProducto.addItem("-- Seleccione --");
         try {
             inventariosCache = inventarioDAO.listar();
+
             if (inventariosCache.isEmpty()) {
                 JOptionPane.showMessageDialog(vista,
-                        "No hay productos en inventario. Agregue productos primero.",
+                        "No hay productos en inventario.",
                         "Inventario vacío", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            for (Inventario i : inventariosCache) {
+
+            for (Inventario inv : inventariosCache) {
                 vista.cmbProducto.addItem(
-                        i.getIdInventario() + " - " + i.getNombreProducto()
-                                + " ($" + i.getPrecioUnitario() + ")"
-                                + "  [stock: " + i.getStockDisponible() + "]");
+                        inv.getIdInventario() + " - " + inv.getNombreProducto()
+                        + " ($" + inv.getPrecioUnitario() + ")"
+                        + "  [stock: " + inv.getStockDisponible() + "]"
+                );
             }
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(vista,
-                    "Error al cargar productos: " + e.getMessage(),
+                    "Error al cargar productos:\n" + e.getClass().getSimpleName()
+                    + ": " + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace(); // ver en consola de NetBeans
         }
     }
 
@@ -170,7 +190,7 @@ public class ControladorVentas {
             }
 
             DetalleVenta d = new DetalleVenta();
-            d.setIdProducto(inv.getIdProducto()); // FK real hacia tabla productos
+            d.setIdProducto(inv.getIdProducto());   // FK real hacia tabla productos
             d.setCantidad(cantidad);
             d.setPrecioUnitario(inv.getPrecioUnitario());
 
@@ -203,11 +223,11 @@ public class ControladorVentas {
         DefaultTableModel modelo = (DefaultTableModel) vista.tblDetalleVenta.getModel();
         modelo.setRowCount(0);
         for (DetalleVenta d : detallesTemp) {
-            modelo.addRow(new Object[] {
-                    d.getIdProducto(),
-                    d.getCantidad(),
-                    d.getPrecioUnitario(),
-                    d.getSubtotal()
+            modelo.addRow(new Object[]{
+                d.getIdProducto(),
+                d.getCantidad(),
+                d.getPrecioUnitario(),
+                d.getSubtotal()
             });
         }
     }
@@ -222,14 +242,16 @@ public class ControladorVentas {
     }
 
     private void registrarVenta() {
-        if (!validarFormulario())
+        if (!validarFormulario()) {
             return;
+        }
 
         int confirm = JOptionPane.showConfirmDialog(vista,
                 "¿Confirmar el registro de esta venta?",
                 "Confirmar", JOptionPane.YES_NO_OPTION);
-        if (confirm != JOptionPane.YES_OPTION)
+        if (confirm != JOptionPane.YES_OPTION) {
             return;
+        }
 
         try {
             String selCliente = (String) vista.cmbCliente.getSelectedItem();

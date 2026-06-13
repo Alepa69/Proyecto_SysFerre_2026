@@ -1,10 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 
 package dao;
 
+import com.ues.group.arbolb.ArbolBusqueda;
 import conexion.Conexion;
 import java.sql.Connection;
 import java.sql.Date;
@@ -15,7 +12,7 @@ import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import modelo.DetalleVenta;
-import interfaz.IVentaDAO;
+import interfazDao.IVentaDAO;
 import modelo.Venta;
 
 /**
@@ -47,7 +44,6 @@ public class VentaDAO implements IVentaDAO {
 
     private static final String DEVOLVER_STOCK = "UPDATE public.productos SET stock = stock + ? WHERE id_productos = ?";
 
-    
     @Override
     public void registrarVenta(Venta venta) throws Exception {
         Connection conn = Conexion.getConexion();
@@ -55,8 +51,7 @@ public class VentaDAO implements IVentaDAO {
             conn.setAutoCommit(false);
 
             // 1. Insertar encabezado de venta y recuperar el ID generado
-            PreparedStatement psVenta = conn.prepareStatement(
-                    INSERT_VENTA, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement psVenta = conn.prepareStatement(INSERT_VENTA, Statement.RETURN_GENERATED_KEYS);
             psVenta.setDate(1, Date.valueOf(venta.getFecha()));
             psVenta.setTime(2, Time.valueOf(venta.getHora()));
             psVenta.setInt(3, venta.getIdCliente());
@@ -99,14 +94,13 @@ public class VentaDAO implements IVentaDAO {
         }
     }
 
-    
     @Override
     public void anularVenta(int idVenta) throws Exception {
         Connection conn = Conexion.getConexion();
         try {
             conn.setAutoCommit(false);
 
-            // 1. Recuperar detalles para devolver stock antes de eliminar
+            //Recuperar detalles para devolver stock antes de eliminar
             List<DetalleVenta> detalles = listarDetalles(idVenta);
 
             PreparedStatement psStock = conn.prepareStatement(DEVOLVER_STOCK);
@@ -117,13 +111,12 @@ public class VentaDAO implements IVentaDAO {
             }
             psStock.executeBatch();
 
-            // 2. Eliminar detalles (también los borra el ON DELETE CASCADE,
-            //    pero se hace explícito para claridad)
+            //Eliminar detalles (también los borra el ON DELETE CASCADE
             PreparedStatement psDetalles = conn.prepareStatement(DELETE_DETALLES_POR_VENTA);
             psDetalles.setInt(1, idVenta);
             psDetalles.executeUpdate();
 
-            // 3. Eliminar encabezado
+            //Eliminar encabezado
             PreparedStatement psVenta = conn.prepareStatement(DELETE_VENTA);
             psVenta.setInt(1, idVenta);
             psVenta.executeUpdate();
@@ -138,17 +131,17 @@ public class VentaDAO implements IVentaDAO {
     }
 
     @Override
-    public List<Venta> listar() throws Exception {
-        List<Venta> lista = new ArrayList<>();
+    public ArbolBusqueda<Venta> listar() throws Exception {
+        ArbolBusqueda<Venta> arbol = new ArbolBusqueda<>();
         Connection conn = Conexion.getConexion();
         PreparedStatement ps = conn.prepareStatement(SELECT_ALL_VENTAS);
         ResultSet rs = ps.executeQuery();
         while (rs.next()) {
             Venta v = mapearVenta(rs);
-            lista.add(v);
+            arbol.insertar(v);   // ordenado por fecha+id (compareTo de Venta)
         }
         conn.close();
-        return lista;
+        return arbol;
     }
 
     //Busca venta ID
