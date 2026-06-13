@@ -6,122 +6,89 @@ import java.util.ArrayList;
  *
  * @author alfar
  */
-public class ArbolBusqueda<T extends Comparable<T>> extends ArbolBinario {
+public class ArbolBusqueda<T extends Comparable<T>> extends ArbolBinario<T> {
+
     public ArbolBusqueda() {
-
         super();
-
     }
 
-    public <T extends Comparable> void insertar(T dato) {
+    public void insertar(T dato) {
         super.setRaiz(insertar(dato, super.getRaiz()));
     }
 
-    public <T extends Comparable> Nodo insertar(T dato, Nodo r) {
+    private Nodo<T> insertar(T dato, Nodo<T> r) {
         if (r == null) {
-            r = new Nodo(dato);
+            r = new Nodo<>(dato);
         } else if (dato.compareTo(r.getDato()) < 0) {
-            Nodo izd;
-            izd = insertar(dato, r.getRamaIzq());
-            r.setRamaIzq(izd);
-            // insertar(dato,r.getRamaIzq());
+            r.setRamaIzq(insertar(dato, r.getRamaIzq()));
         } else if (dato.compareTo(r.getDato()) > 0) {
-            Nodo drch;
-            drch = insertar(dato, r.getRamaDrch());
-            r.setRamaDrch(drch);
-            // insertar(dato,r.getRamaDrch());
+            r.setRamaDrch(insertar(dato, r.getRamaDrch()));
         } else {
-            System.out.println("Duplicado!");
+            System.out.println("Duplicado: " + dato);
         }
         return r;
     }
 
-    public ArrayList NID() {
-
-        ArrayList a = new ArrayList();
+    // Preorden
+    public ArrayList<T> NID() {
+        ArrayList<T> a = new ArrayList<>();
         return preOrdenNID(super.getRaiz(), a);
-
     }
 
-    public ArrayList IND() {
-        ArrayList a = new ArrayList();
+    // Inorden
+    public ArrayList<T> IND() {
+        ArrayList<T> a = new ArrayList<>();
         return inOrdenIND(super.getRaiz(), a);
     }
 
-    public ArrayList IDN() {
-        ArrayList a = new ArrayList();
+    // Postorden
+    public ArrayList<T> IDN() {
+        ArrayList<T> a = new ArrayList<>();
         return postOrdenIDN(super.getRaiz(), a);
     }
 
-    public <T extends Comparable> void quitar(T dato) {
+    public void quitar(T dato) {
         super.setRaiz(eliminar(dato, super.getRaiz()));
     }
 
-    public <T extends Comparable> Nodo eliminar(T dato, Nodo r) {
-
-        if (r == null) { // r : parte del arbol //si no hay hoja recorrio todo el arbol
-            System.out.println("No existe para eliminar!");
+    private Nodo<T> eliminar(T dato, Nodo<T> r) {
+        if (r == null) {
+            System.out.println("No existe para eliminar: " + dato);
+            return null;
         } else if (dato.compareTo(r.getDato()) < 0) {
-            Nodo izq;
-            izq = eliminar(dato, r.getRamaIzq());
-            r.setRamaIzq(izq);
+            r.setRamaIzq(eliminar(dato, r.getRamaIzq()));
         } else if (dato.compareTo(r.getDato()) > 0) {
-            Nodo drch;
-            drch = eliminar(dato, r.getRamaDrch());
-            r.setRamaDrch(drch);
-            // eliminar(dato, r.getRamaDrch());
+            r.setRamaDrch(eliminar(dato, r.getRamaDrch()));
         } else {
-            Nodo q;
-            q = r;
-
-            if (q.getRamaIzq() == null) {
-                r = q.getRamaDrch();
-            } else if (q.getRamaDrch() == null) {
-                r = q.getRamaIzq();
+            // Nodo encontrado
+            if (r.getRamaIzq() == null) {
+                return r.getRamaDrch();
+            } else if (r.getRamaDrch() == null) {
+                return r.getRamaIzq();
             } else {
-
-                q = aplicarReglaDosHijos(q);
+                Nodo<T> sucesor = minimoNodo(r.getRamaDrch());
+                r.setDato(sucesor.getDato());
+                r.setRamaDrch(eliminar(sucesor.getDato(), r.getRamaDrch()));
             }
-
-            q = null; // para eliminar
         }
-
         return r;
     }
 
-    private Nodo aplicarReglaDosHijos(Nodo actual) {
-        Nodo aux, ant; // nodo auxiliar: para trasladar de nodo en nodo ---- nodo ant: nodo anterior
-        ant = actual;
-        aux = actual.getRamaIzq(); // buscar mas a la derecha de la rama izquierda
-        while (aux.getRamaDrch() != null) { // si hay algo en la rama derecha
-            ant = aux; // salva
-            aux = aux.getRamaDrch();
+    private Nodo<T> minimoNodo(Nodo<T> r) {
+        while (r.getRamaIzq() != null) {
+            r = r.getRamaIzq();
         }
-        actual.setDato(aux.getDato()); // set para cambiar el valor
-        if (ant == actual) {
-            ant.setRamaIzq(aux.getRamaIzq());
-        } else {
-            ant.setRamaDrch(aux.getRamaIzq());
-        }
-        return aux;
+        return r;
     }
 
-    // Método público para llamar desde el exterior
     public int contarNodosPadres() {
         return contarNodosPadres(super.getRaiz());
     }
 
-    // Método privado recursivo
-    private int contarNodosPadres(Nodo r) {
-        // Si el nodo es nulo o es una hoja (no tiene hijos), no es un padre
+    private int contarNodosPadres(Nodo<T> r) {
         if (r == null || (r.getRamaIzq() == null && r.getRamaDrch() == null)) {
             return 0;
         }
-
-        // Si llegamos aquí, el nodo actual TIENE al menos un hijo, por lo tanto es
-        // padre.
-        // Sumamos 1 y seguimos buscando en sus ramas.
         return 1 + contarNodosPadres(r.getRamaIzq()) + contarNodosPadres(r.getRamaDrch());
     }
-
 }

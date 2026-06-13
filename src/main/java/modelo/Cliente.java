@@ -8,7 +8,7 @@ package modelo;
  *
  * @author natha
  */
-public class Cliente implements Comparable<Cliente>{
+public class Cliente implements Comparable<Cliente> {
 
     private int idCliente;
     private String nombre;
@@ -52,11 +52,13 @@ public class Cliente implements Comparable<Cliente>{
         return nombre + " " + apellido;
     }
 
-        @Override
+    @Override
     public int compareTo(Cliente o) {
-        /*Alumno actual=this;
-        return (actual.getNombre().compareToIgnoreCase(o.getNombre()));*/
+        /*
+         * Alumno actual=this;
+         * return (actual.getNombre().compareToIgnoreCase(o.getNombre()));
+         */
         Cliente actual = this;
-        return(actual.getNombre().compareTo(o.getNombre()));
+        return (actual.getNombre().compareTo(o.getNombre()));
     }
 }

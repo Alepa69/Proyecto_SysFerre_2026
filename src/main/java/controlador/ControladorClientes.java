@@ -3,8 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package controlador;
+
 import com.ues.group.vista.VistaClientes;
 import com.ues.group.vista.VistaMenuPrincipal;
+
+import Arboles.ArbolBusqueda;
 import dao.ClienteDAO;
 import modelo.Cliente;
 import javax.swing.table.DefaultTableModel;
@@ -19,7 +22,6 @@ public class ControladorClientes {
 
     private final VistaClientes vista;
     private final ClienteDAO dao;
-    
 
     public ControladorClientes(VistaClientes vista) {
         this.vista = vista;
@@ -35,7 +37,7 @@ public class ControladorClientes {
         vista.btnModificar.addActionListener(e -> modificar());
         vista.btnEliminar.addActionListener(e -> eliminar());
         vista.btnLimpiar.addActionListener(e -> limpiar());
-       // vista.btnBack.addActionListener(e -> limpiar());
+        vista.btnBuscar.addActionListener(e -> buscar());
 
         vista.tblClientes.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -49,13 +51,15 @@ public class ControladorClientes {
         limpiar();
         vista.txtNombre.requestFocus();
     }
+
     private void backMenu() {
         vista.dispose();
-        
+
     }
 
     private void guardar() {
-        if (!validarCampos()) return;
+        if (!validarCampos())
+            return;
         try {
             Cliente c = new Cliente();
             c.setNombre(vista.txtNombre.getText().trim());
@@ -75,7 +79,8 @@ public class ControladorClientes {
             JOptionPane.showMessageDialog(vista, "Seleccione un cliente de la tabla.");
             return;
         }
-        if (!validarCampos()) return;
+        if (!validarCampos())
+            return;
         try {
             Cliente c = new Cliente();
             c.setIdCliente(Integer.parseInt(vista.txtId.getText()));
@@ -123,12 +128,13 @@ public class ControladorClientes {
         DefaultTableModel modelo = (DefaultTableModel) vista.tblClientes.getModel();
         modelo.setRowCount(0);
         try {
-            List<Cliente> lista = dao.listar();
-            for (Cliente c : lista) {
-                modelo.addRow(new Object[]{
-                    c.getIdCliente(),
-                    c.getNombre(),
-                    c.getApellido()
+            ArbolBusqueda<Cliente> lista = dao.listar();
+            for (Cliente x : lista.IND()) {
+                Cliente c = (Cliente) x;
+                modelo.addRow(new Object[] {
+                        c.getIdCliente(),
+                        c.getNombre(),
+                        c.getApellido()
                 });
             }
         } catch (Exception e) {
@@ -149,11 +155,108 @@ public class ControladorClientes {
 
     private boolean validarCampos() {
         if (vista.txtNombre.getText().trim().isEmpty() ||
-            vista.txtApellido.getText().trim().isEmpty()) {
+                vista.txtApellido.getText().trim().isEmpty()) {
             JOptionPane.showMessageDialog(vista, "Nombre y Apellido son obligatorios.",
                     "Campos vacíos", JOptionPane.WARNING_MESSAGE);
             return false;
         }
         return true;
     }
+
+    /// PRUEBAS
+    private void buscar() {
+        String idTexto = vista.txtId.getText().trim();
+
+        // Si el campo ID está vacío, buscar por nombre en la tabla
+        if (idTexto.isEmpty()) {
+            String nombre = vista.txtNombre.getText().trim();
+            if (nombre.isEmpty()) {
+                JOptionPane.showMessageDialog(vista,
+                        "Ingrese un ID o un Nombre para buscar.",
+                        "Campo vacío", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            buscarPorNombre(nombre);
+            return;
+        }
+
+        // Buscar por ID
+        try {
+            int id = Integer.parseInt(idTexto);
+            Cliente c = dao.buscar(id);
+
+            if (c == null) {
+                JOptionPane.showMessageDialog(vista,
+                        "No se encontró ningún cliente con ID: " + id,
+                        "Sin resultados", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            // Llenar los campos con el cliente encontrado
+            vista.txtId.setText(String.valueOf(c.getIdCliente()));
+            vista.txtNombre.setText(c.getNombre());
+            vista.txtApellido.setText(c.getApellido());
+
+            // Resaltar la fila en la tabla si existe
+            resaltarFilaEnTabla(c.getIdCliente());
+
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(vista,
+                    "El ID debe ser un número entero.",
+                    "ID inválido", JOptionPane.WARNING_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(vista,
+                    "Error al buscar: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // Búsqueda por nombre usando el árbol (recorre IND y compara)
+    private void buscarPorNombre(String nombre) {
+        try {
+            ArbolBusqueda<Cliente> arbol = dao.listar();
+            Cliente encontrado = null;
+
+            for (Cliente x : arbol.IND()) {
+                Cliente c = (Cliente) x;
+                if (c.getNombre().equalsIgnoreCase(nombre)) {
+                    encontrado = c;
+                    break;
+                }
+            }
+
+            if (encontrado == null) {
+                JOptionPane.showMessageDialog(vista,
+                        "No se encontró ningún cliente con nombre: " + nombre,
+                        "Sin resultados", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            vista.txtId.setText(String.valueOf(encontrado.getIdCliente()));
+            vista.txtNombre.setText(encontrado.getNombre());
+            vista.txtApellido.setText(encontrado.getApellido());
+            resaltarFilaEnTabla(encontrado.getIdCliente());
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(vista,
+                    "Error al buscar por nombre: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    // Resalta visualmente la fila del cliente encontrado en la tabla
+    private void resaltarFilaEnTabla(int idCliente) {
+        DefaultTableModel modelo = (DefaultTableModel) vista.tblClientes.getModel();
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            int idFila = Integer.parseInt(modelo.getValueAt(i, 0).toString());
+            if (idFila == idCliente) {
+                vista.tblClientes.setRowSelectionInterval(i, i);
+                // Hace scroll hasta la fila encontrada
+                vista.tblClientes.scrollRectToVisible(
+                        vista.tblClientes.getCellRect(i, 0, true));
+                break;
+            }
+        }
+    }
+
 }
