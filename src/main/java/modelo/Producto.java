@@ -10,7 +10,7 @@ import java.math.BigDecimal;
  *
  * @author natha
  */
-public class Producto {
+public class Producto implements Comparable<Producto> {
 
     private int idProducto;
     private BigDecimal precio;
@@ -26,7 +26,7 @@ public class Producto {
         this.idProducto = idProducto;
         this.precio = precio;
         this.descripcion = descripcion;
-        this.tipo = tipo;
+        this.tipo = tipo;           
         this.stock = stock;
     }
 
@@ -73,5 +73,11 @@ public class Producto {
     @Override
     public String toString() {
         return descripcion;
+    }
+
+        @Override
+    public int compareTo(Producto o) {
+        Producto actual = this;
+        return actual.getDescripcion().compareTo(o.getDescripcion());
     }
 }

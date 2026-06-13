@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author natha
  */
-public class CompraProveedor {
+public class CompraProveedor implements Comparable<CompraProveedor> {
 
     private int idCompra;
     private String categoria;
@@ -103,5 +103,10 @@ public class CompraProveedor {
     @Override
     public String toString() {
         return "Compra #" + idCompra + " - " + fecha;
+    }
+
+    @Override
+    public int compareTo(CompraProveedor o) {
+        return this.fecha.compareTo(o.getFecha());
     }
 }
