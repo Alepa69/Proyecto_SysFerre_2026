@@ -56,7 +56,7 @@ private void llamarCompras() {
 
 private void llamarEmpleados() {
     VistaEmpleados ve = new VistaEmpleados();
-    //new ControladorEmpleados(ve);
+    new ControladorEmpleados(ve);
     ve.setVisible(true);
     //vista.dispose();
 }

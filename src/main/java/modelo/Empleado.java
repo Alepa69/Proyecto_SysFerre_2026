@@ -1,14 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package modelo;
 
-/**
- *
- * @author natha
- */
-public class Empleado {
+public class Empleado implements Comparable<Empleado> {
 
     private int idEmpleado;
     private String nombre;
@@ -16,6 +8,8 @@ public class Empleado {
     private String telefono;
     private String correo;
     private String direccion;
+    private String nombreUsuario;
+    private String contrasena;
 
     public Empleado() {
     }
@@ -28,6 +22,14 @@ public class Empleado {
         this.telefono = telefono;
         this.correo = correo;
         this.direccion = direccion;
+    }
+
+    public Empleado(int idEmpleado, String nombre, String apellido,
+            String telefono, String correo, String direccion,
+            String nombreUsuario, String contrasena) {
+        this(idEmpleado, nombre, apellido, telefono, correo, direccion);
+        this.nombreUsuario = nombreUsuario;
+        this.contrasena = contrasena;
     }
 
     public int getIdEmpleado() {
@@ -78,8 +80,29 @@ public class Empleado {
         this.direccion = direccion;
     }
 
+    public String getNombreUsuario() {
+        return nombreUsuario;
+    }
+
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
+    }
+
+    public String getContrasena() {
+        return contrasena;
+    }
+
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
+    }
+
     @Override
     public String toString() {
         return nombre + " " + apellido;
+    }
+
+    @Override
+    public int compareTo(Empleado otro) {
+        return Integer.compare(this.idEmpleado, otro.idEmpleado);
     }
 }

@@ -5,6 +5,7 @@
 package com.ues.group.vista;
 
 import com.ues.group.vista.util.TemaPurpura;
+import javax.swing.JButton;
 
 /**
  *
@@ -20,6 +21,7 @@ public class VistaEmpleados extends javax.swing.JFrame {
     public VistaEmpleados() {
         initComponents();
         TemaPurpura.aplicar(this);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
     }
 
@@ -283,6 +285,10 @@ public class VistaEmpleados extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new VistaEmpleados().setVisible(true));
+    }
+
+    public JButton getBtnBack() {
+        return btnBack1;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
