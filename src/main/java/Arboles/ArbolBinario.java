@@ -35,7 +35,7 @@ public class ArbolBinario<T extends Comparable<T>> {
         return a;
     }
 
-    protected ArrayList<T> inOrdenIND(Nodo r, ArrayList a) { // Metodo Inorden
+    public ArrayList<T> inOrdenIND(Nodo r, ArrayList a) { // Metodo Inorden
         if (r != null) {
 
             inOrdenIND(r.getRamaIzq(), a);

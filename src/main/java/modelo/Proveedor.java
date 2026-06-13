@@ -82,7 +82,8 @@ public class Proveedor implements Comparable<Proveedor> {
     public String toString() {
         return nombre;
     }
-
+   
+    //ordena por nombre
     @Override
     public int compareTo(Proveedor o) {
         Proveedor actual = this;
