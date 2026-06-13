@@ -1,21 +1,20 @@
 package controlador;
 
 import com.ues.group.vista.VistaProveedores;
-
-import Arboles.ArbolBinario;
+import Arboles.ArbolBusqueda; // Usamos únicamente tu árbol de búsqueda
 import dao.ProveedoresDAO;
 import modelo.Proveedor;
+
 import javax.swing.table.DefaultTableModel;
 import java.util.List;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 public class ControladorProveedores {
 
     private final VistaProveedores vista;
     private final ProveedoresDAO dao;
-
-    // Lista base cargada desde BD, usada para árbol B
-    private List<Proveedor> listaBase;
+    private ArbolBusqueda<Proveedor> arbolBase;
 
     public ControladorProveedores(VistaProveedores vista) {
         this.vista = vista;
@@ -25,7 +24,6 @@ public class ControladorProveedores {
         cargarTabla();
     }
 
-    // Rellena el combo con las opciones de ordenamiento
     private void configurarComboOrdenar() {
         vista.cmbOrdenarProveedor.removeAllItems();
         vista.cmbOrdenarProveedor.addItem("ID");
@@ -60,7 +58,7 @@ public class ControladorProveedores {
         vista.dispose();
     }
 
-    // ─── BÚSQUEDA CON ÁRBOL B (por ID) ───────────────────────────────────────
+    // ─── BÚSQUEDA CON ÁRBOL DE BÚSQUEDA ──────────────────────────────────────
     private void buscar() {
         String texto = vista.txtbuscarIdProveedor.getText().trim();
         if (texto.isEmpty()) {
@@ -77,33 +75,33 @@ public class ControladorProveedores {
             return;
         }
 
-        if (listaBase == null || listaBase.isEmpty()) {
+        if (arbolBase == null || arbolBase.isEmpty()) {
             JOptionPane.showMessageDialog(vista, "No hay proveedores cargados.",
                     "Sin datos", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
-        // Construir árbol B con los IDs y buscar
-        ArbolBinario<Integer> arbol = new ArbolBinario<>();
-        for (Proveedor p : listaBase) {
+        List<Proveedor> listaActual = arbolBase.IND();
+
+        ArbolBusqueda<Integer> arbol = new ArbolBusqueda<>();
+        for (Proveedor p : listaActual) {
             arbol.insertar(p.getIdProveedor());
         }
 
-        Integer encontrado = arbol.buscar(idBuscado);
-        if (encontrado == null) {
-            JOptionPane.showMessageDialog(vista, "No se encontró proveedor con ID " + idBuscado + ".",
+        // SOLUCIÓN: Quitamos la variable 'Integer encontrado' y evaluamos directo
+        if (arbol.buscar(idBuscado) == null) {
+            JOptionPane.showMessageDialog(vista, "No se encontró proveedor con ID " +
+                    idBuscado + ".",
                     "Sin resultados", JOptionPane.INFORMATION_MESSAGE);
             return;
         }
 
-        // Encontrado en árbol → buscar objeto completo en la lista
-        Proveedor resultado = listaBase.stream()
+        Proveedor resultado = listaActual.stream()
                 .filter(p -> p.getIdProveedor() == idBuscado)
                 .findFirst()
                 .orElse(null);
 
         if (resultado != null) {
-            // Mostrar solo ese registro en la tabla
             DefaultTableModel modelo = (DefaultTableModel) vista.tblProveedores.getModel();
             modelo.setRowCount(0);
             modelo.addRow(new Object[] {
@@ -114,7 +112,6 @@ public class ControladorProveedores {
                     resultado.getTelefonos(),
                     resultado.getCorreo()
             });
-            // Rellenar formulario
             vista.txtId.setText(String.valueOf(resultado.getIdProveedor()));
             vista.txtNombre.setText(resultado.getNombre());
             vista.txtNit.setText(resultado.getNit());
@@ -124,9 +121,9 @@ public class ControladorProveedores {
         }
     }
 
-    // ─── ORDENAMIENTO CON ÁRBOL B ─────────────────────────────────────────────
+    // ─── ORDENAMIENTO CON ÁRBOL DE BÚSQUEDA ──────────────────────────────────
     private void ordenar() {
-        if (listaBase == null || listaBase.isEmpty()) {
+        if (arbolBase == null || arbolBase.isEmpty()) {
             JOptionPane.showMessageDialog(vista, "No hay proveedores para ordenar.",
                     "Sin datos", JOptionPane.INFORMATION_MESSAGE);
             return;
@@ -146,62 +143,85 @@ public class ControladorProveedores {
                 ordenados = ordenarPorNit();
                 break;
             default:
-                ordenados = listaBase;
+                ordenados = arbolBase.IND();
         }
 
         poblarTabla(ordenados);
     }
 
-    // Ordena por ID usando árbol B de enteros
+    @SuppressWarnings("unchecked")
     private List<Proveedor> ordenarPorId() {
-        ArbolBinario<Integer> arbol = new ArbolBinario<>();
-        for (Proveedor p : listaBase) {
+        // CORRECCIÓN: Cambiado a ArbolBusqueda
+        ArbolBusqueda<Integer> arbol = new ArbolBusqueda<>();
+        List<Proveedor> listaActual = arbolBase.IND();
+        for (Proveedor p : listaActual) {
             arbol.insertar(p.getIdProveedor());
         }
-        List<Integer> idsOrdenados = arbol.recorridoEnOrden();
 
-        List<Proveedor> resultado = new java.util.ArrayList<>();
+        // CORRECCIÓN: Usamos .IND() directo del árbol para simplificar
+        List<Integer> idsOrdenados = arbol.IND();
+
+        List<Proveedor> copiaActual = new ArrayList<>(listaActual);
+        List<Proveedor> resultado = new ArrayList<>();
+
         for (Integer id : idsOrdenados) {
-            listaBase.stream()
+            copiaActual.stream()
                     .filter(p -> p.getIdProveedor() == id)
                     .findFirst()
-                    .ifPresent(resultado::add);
+                    .ifPresent(p -> {
+                        resultado.add(p);
+                        copiaActual.remove(p);
+                    });
         }
         return resultado;
     }
 
-    // Ordena por Nombre usando árbol B de Strings
+    @SuppressWarnings("unchecked")
     private List<Proveedor> ordenarPorNombre() {
-        ArbolBinario<String> arbol = new ArbolBinario<>();
-        for (Proveedor p : listaBase) {
+        List<Proveedor> listaActual = arbolBase.IND();
+
+        // CORRECCIÓN: Cambiado a ArbolBusqueda y uso de .IND()
+        ArbolBusqueda<String> arbol = new ArbolBusqueda<>();
+        for (Proveedor p : listaActual) {
             arbol.insertar(p.getNombre().toLowerCase());
         }
-        List<String> nombresOrdenados = arbol.recorridoEnOrden();
+        List<String> nombresOrdenados = arbol.IND();
 
-        List<Proveedor> resultado = new java.util.ArrayList<>();
+        List<Proveedor> copiaActual = new ArrayList<>(listaActual);
+        List<Proveedor> resultado = new ArrayList<>();
         for (String nombre : nombresOrdenados) {
-            listaBase.stream()
+            copiaActual.stream()
                     .filter(p -> p.getNombre().toLowerCase().equals(nombre))
                     .findFirst()
-                    .ifPresent(resultado::add);
+                    .ifPresent(p -> {
+                        resultado.add(p);
+                        copiaActual.remove(p);
+                    });
         }
         return resultado;
     }
 
-    // Ordena por NIT usando árbol B de Strings
+    @SuppressWarnings("unchecked")
     private List<Proveedor> ordenarPorNit() {
-        ArbolBinario<String> arbol = new ArbolBinario<>();
-        for (Proveedor p : listaBase) {
+        List<Proveedor> listaActual = arbolBase.IND();
+
+        // CORRECCIÓN: Cambiado a ArbolBusqueda y uso de .IND()
+        ArbolBusqueda<String> arbol = new ArbolBusqueda<>();
+        for (Proveedor p : listaActual) {
             arbol.insertar(p.getNit().toLowerCase());
         }
-        List<String> nitsOrdenados = arbol.recorridoEnOrden();
+        List<String> nitsOrdenados = arbol.IND();
 
-        List<Proveedor> resultado = new java.util.ArrayList<>();
+        List<Proveedor> copiaActual = new ArrayList<>(listaActual);
+        List<Proveedor> resultado = new ArrayList<>();
         for (String nit : nitsOrdenados) {
-            listaBase.stream()
+            copiaActual.stream()
                     .filter(p -> p.getNit().toLowerCase().equals(nit))
                     .findFirst()
-                    .ifPresent(resultado::add);
+                    .ifPresent(p -> {
+                        resultado.add(p);
+                        copiaActual.remove(p);
+                    });
         }
         return resultado;
     }
@@ -272,16 +292,15 @@ public class ControladorProveedores {
         vista.txtCorreo.setText("");
         vista.txtbuscarIdProveedor.setText("");
         vista.tblProveedores.clearSelection();
-        // Restaurar tabla completa si se había filtrado por búsqueda
-        if (listaBase != null) {
-            poblarTabla(listaBase);
+        if (arbolBase != null) {
+            poblarTabla(arbolBase.IND());
         }
     }
 
     private void cargarTabla() {
         try {
-            listaBase = dao.listar();
-            poblarTabla(listaBase);
+            arbolBase = dao.listar();
+            poblarTabla(arbolBase.IND());
         } catch (Exception e) {
             JOptionPane.showMessageDialog(vista, "Error al cargar tabla: " + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);

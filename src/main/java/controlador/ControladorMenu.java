@@ -62,7 +62,7 @@ public class ControladorMenu {
 
     private void llamarInventario() {
         VistaInventario vi = new VistaInventario();
-        new ControladorInventario(vi);
+        // new ControladorInventario(vi);
         vi.setVisible(true);
         // vista.dispose();
     }
@@ -78,7 +78,7 @@ public class ControladorMenu {
         VistaProveedores vp = new VistaProveedores();
         new ControladorProveedores(vp);
         vp.setVisible(true);
-        // vista.dispose();
+        vista.dispose();
     }
 
     private void llamarReportes() {
@@ -88,12 +88,12 @@ public class ControladorMenu {
         // vista.dispose();
     }
 
-private void llamarVentas() {
-    VistaVentas vv = new VistaVentas();
-    new ControladorVentas(vv);
-    vv.setVisible(true);
-    //vista.dispose();
-}
+    private void llamarVentas() {
+        VistaVentas vv = new VistaVentas();
+        new ControladorVentas(vv);
+        vv.setVisible(true);
+        // vista.dispose();
+    }
 
     private void salir() {
         System.exit(0);

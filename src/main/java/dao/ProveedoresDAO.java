@@ -8,6 +8,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+
+import Arboles.ArbolBusqueda;
 import modelo.Proveedor;
 
 public class ProveedoresDAO implements IProveedoresDAO {
@@ -75,13 +77,22 @@ public class ProveedoresDAO implements IProveedoresDAO {
         }
     }
 
-    public List<Proveedor> listar() throws Exception {
-        List<Proveedor> lista = new ArrayList<>();
+    // MODIFICACIÓN: Retornamos ArbolBusqueda e insertamos los nodos
+    public ArbolBusqueda<Proveedor> listar() throws Exception {
+        ArbolBusqueda<Proveedor> lista = new ArbolBusqueda<>();
         Connection conn = Conexion.getConexion();
         PreparedStatement ps = conn.prepareStatement(SELECT_ALL);
         ResultSet rs = ps.executeQuery();
         while (rs.next()) {
-            lista.add(mapear(rs));
+            Proveedor c = new Proveedor();
+            c.setIdProveedor(rs.getInt("id_proveedores"));
+            c.setNombre(rs.getString("nombre"));
+            c.setNit(rs.getString("nit"));
+            c.setTelefonos(rs.getString("telefono"));
+            c.setCorreo(rs.getString("correo"));
+            c.setDireccion(rs.getString("direccion"));
+            lista.insertar(c); // Se inserta ordenándose por nombre (según tu compareTo)
+
         }
         conn.close();
         return lista;
@@ -92,23 +103,29 @@ public class ProveedoresDAO implements IProveedoresDAO {
         PreparedStatement ps = conn.prepareStatement(SELECT_ID);
         ps.setInt(1, idProveedor);
         ResultSet rs = ps.executeQuery();
-        Proveedor p = null;
+        Proveedor c = null;
         if (rs.next()) {
-            p = mapear(rs);
+            c = new Proveedor();
+            c.setIdProveedor(rs.getInt("id_proveedores"));
+            c.setNombre(rs.getString("nombre"));
+            c.setNit(rs.getString("nit"));
+            c.setTelefonos(rs.getString("telefono"));
+            c.setCorreo(rs.getString("correo"));
+            c.setDireccion(rs.getString("direccion"));
         }
         conn.close();
-        return p;
+        return c;
     }
 
-    // Mapea un ResultSet a un objeto Proveedor
-    private Proveedor mapear(ResultSet rs) throws Exception {
-        Proveedor p = new Proveedor();
-        p.setIdProveedor(rs.getInt("id_proveedores"));
-        p.setNombre(rs.getString("nombre"));
-        p.setNit(rs.getString("nit"));
-        p.setTelefonos(rs.getString("telefono"));
-        p.setCorreo(rs.getString("correo"));
-        p.setDireccion(rs.getString("direccion"));
-        return p;
-    }
+    // // Mapea un ResultSet a un objeto Proveedor
+    // private Proveedor mapear(ResultSet rs) throws Exception {
+    // Proveedor p = new Proveedor();
+    // p.setIdProveedor(rs.getInt("id_proveedores"));
+    // p.setNombre(rs.getString("nombre"));
+    // p.setNit(rs.getString("nit"));
+    // p.setTelefonos(rs.getString("telefono"));
+    // p.setCorreo(rs.getString("correo"));
+    // p.setDireccion(rs.getString("direccion"));
+    // return p;
+    // }
 }

@@ -6,11 +6,17 @@ package dao;
 
 import conexion.Conexion;
 import interfaz.IInventarioDAO;
+
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import Arboles.ArbolBusqueda;
+import Arboles.Nodo;
 import modelo.Inventario;
 
 /**
@@ -19,26 +25,15 @@ import modelo.Inventario;
  */
 public class InventarioDAO implements IInventarioDAO {
 
-    private static final String INSERT
-            = "INSERT INTO inventario (nombre_producto, precio_unitario, descripcion, stock_disponible, id_producto) "
+    private static final String INSERT = "INSERT INTO inventario (nombre_producto, precio_unitario, descripcion, stock_disponible, id_producto) "
             + "VALUES (?, ?, ?, ?, ?)";
 
-    private static final String SELECT_ALL
-            = "SELECT * FROM inventario ORDER BY id_inventario";
+    private static final String SELECT_ALL = "SELECT * FROM inventario ORDER BY id_inventario";
 
-    private static final String SELECT_ID
-            = "SELECT * FROM inventario WHERE id_inventario = ?";
-
-    private static final String UPDATE
-            = "UPDATE inventario SET nombre_producto = ?, precio_unitario = ?, descripcion = ?, "
+    private static final String UPDATE = "UPDATE inventario SET nombre_producto = ?, precio_unitario = ?, descripcion = ?, "
             + "stock_disponible = ?, id_producto = ? WHERE id_inventario = ?";
 
-    private static final String DELETE
-            = "DELETE FROM inventario WHERE id_inventario = ?";
-
-    private static final String SELECT_NOMBRE
-            = "SELECT * FROM inventario WHERE LOWER(nombre_producto) LIKE LOWER(?) "
-            + "OR LOWER(descripcion) LIKE LOWER(?) ORDER BY nombre_producto";
+    private static final String DELETE = "DELETE FROM inventario WHERE id_inventario = ?";
 
     @Override
     public void insertar(Inventario i) throws Exception {
@@ -100,8 +95,97 @@ public class InventarioDAO implements IInventarioDAO {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public List<Inventario> listar() throws Exception {
+        List<Inventario> raw = listarDesdeBD();
+
+        ArbolBusqueda<NodoInventario> arbol = new ArbolBusqueda<>();
+        for (Inventario inv : raw) {
+            arbol.insertar(new NodoInventario(inv, "ID"));
+        }
+
+        ArrayList<NodoInventario> inorden = arbol.IND();
+        List<Inventario> resultado = new ArrayList<>();
+        for (NodoInventario n : inorden) {
+            resultado.add(n.inventario);
+        }
+        return resultado;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Inventario buscar(int idInventario) throws Exception {
+        List<Inventario> raw = listarDesdeBD();
+
+        ArbolBusqueda<NodoInventario> arbol = new ArbolBusqueda<>();
+        for (Inventario inv : raw) {
+            arbol.insertar(new NodoInventario(inv, "ID"));
+        }
+
+        Inventario clave = new Inventario();
+        clave.setIdInventario(idInventario);
+        Nodo encontrado = arbol.buscar(new NodoInventario(clave, "ID"));
+
+        return encontrado != null ? ((NodoInventario) encontrado.getDato()).inventario : null;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Inventario> buscarPorNombre(String texto) throws Exception {
+        List<Inventario> raw = listarDesdeBD();
+        List<Inventario> filtrada = new ArrayList<>();
+
+        ArbolBusqueda<NodoInventario> arbol = new ArbolBusqueda<>();
+        for (Inventario inv : raw) {
+            arbol.insertar(new NodoInventario(inv, "Nombre A-Z"));
+        }
+
+        Inventario clave = new Inventario();
+        clave.setNombreProducto(texto);
+        Nodo encontrado = arbol.buscar(new NodoInventario(clave, "Nombre A-Z"));
+
+        if (encontrado != null) {
+            filtrada.add(((NodoInventario) encontrado.getDato()).inventario);
+        } else {
+            String textoBusq = texto.toLowerCase();
+            ArrayList<NodoInventario> inorden = arbol.IND();
+            for (NodoInventario n : inorden) {
+                if (n.inventario.getNombreProducto() != null
+                        && n.inventario.getNombreProducto()
+                                .toLowerCase().contains(textoBusq)) {
+                    filtrada.add(n.inventario);
+                }
+            }
+        }
+
+        return filtrada;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<Inventario> listarOrdenado(String criterio) throws Exception {
+        List<Inventario> raw = listarDesdeBD();
+
+        ArbolBusqueda<NodoInventario> arbol = new ArbolBusqueda<>();
+        for (Inventario inv : raw) {
+            arbol.insertar(new NodoInventario(inv, criterio));
+        }
+
+        ArrayList<NodoInventario> inorden = arbol.IND();
+        List<Inventario> resultado = new ArrayList<>();
+        for (NodoInventario n : inorden) {
+            resultado.add(n.inventario);
+        }
+
+        if ("Stock Descendente".equals(criterio)) {
+            Collections.reverse(resultado);
+        }
+
+        return resultado;
+    }
+
+    private List<Inventario> listarDesdeBD() throws Exception {
         List<Inventario> lista = new ArrayList<>();
         Connection conn = Conexion.getConexion();
         PreparedStatement ps = conn.prepareStatement(SELECT_ALL);
@@ -113,70 +197,53 @@ public class InventarioDAO implements IInventarioDAO {
         return lista;
     }
 
-    @Override
-    public Inventario buscar(int idInventario) throws Exception {
-        Connection conn = Conexion.getConexion();
-        PreparedStatement ps = conn.prepareStatement(SELECT_ID);
-        ps.setInt(1, idInventario);
-        ResultSet rs = ps.executeQuery();
-        Inventario i = null;
-        if (rs.next()) {
-            i = mapear(rs);
+    private static class NodoInventario implements Comparable<NodoInventario> {
+
+        final Inventario inventario;
+        final String criterio;
+
+        NodoInventario(Inventario inventario, String criterio) {
+            this.inventario = inventario;
+            this.criterio = criterio;
         }
-        conn.close();
-        return i;
+
+        @Override
+        public int compareTo(NodoInventario otro) {
+            int c;
+            switch (criterio) {
+                case "Nombre A-Z" ->
+                    c = compararTexto(inventario.getNombreProducto(),
+                            otro.inventario.getNombreProducto());
+                case "Precio" ->
+                    c = compararPrecio(inventario.getPrecioUnitario(),
+                            otro.inventario.getPrecioUnitario());
+                case "Stock Ascendente", "Stock Descendente" ->
+                    c = Integer.compare(inventario.getStockDisponible(),
+                            otro.inventario.getStockDisponible());
+                case "ID" ->
+                    c = Integer.compare(inventario.getIdInventario(),
+                            otro.inventario.getIdInventario());
+                default ->
+                    c = Integer.compare(inventario.getIdInventario(),
+                            otro.inventario.getIdInventario());
+            }
+            if (c == 0) {
+                c = Integer.compare(inventario.getIdInventario(),
+                        otro.inventario.getIdInventario());
+            }
+            return c;
+        }
+
+        private int compararTexto(String a, String b) {
+            return (a == null ? "" : a).compareToIgnoreCase(b == null ? "" : b);
+        }
+
+        private int compararPrecio(BigDecimal a, BigDecimal b) {
+            return (a == null ? BigDecimal.ZERO : a)
+                    .compareTo(b == null ? BigDecimal.ZERO : b);
+        }
     }
 
-    @Override
-    public List<Inventario> buscarPorNombre(String texto) throws Exception {
-        List<Inventario> lista = new ArrayList<>();
-        Connection conn = Conexion.getConexion();
-        PreparedStatement ps = conn.prepareStatement(SELECT_NOMBRE);
-        String filtro = "%" + texto + "%";
-        ps.setString(1, filtro);
-        ps.setString(2, filtro);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            lista.add(mapear(rs));
-        }
-        conn.close();
-        return lista;
-    }
-
-    @Override
-    public List<Inventario> listarOrdenado(String criterio) throws Exception {
-        String orden;
-        switch (criterio) {
-            case "Stock Ascendente":
-                orden = "stock_disponible ASC";
-                break;
-            case "Stock Descendente":
-                orden = "stock_disponible DESC";
-                break;
-            case "Nombre A-Z":
-                orden = "nombre_producto ASC";
-                break;
-            case "Precio":
-                orden = "precio_unitario ASC";
-                break;
-            default:
-                orden = "id_inventario ASC";
-        }
-
-        List<Inventario> lista = new ArrayList<>();
-        Connection conn = Conexion.getConexion();
-       
-        String sql = "SELECT * FROM inventario ORDER BY " + orden;
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            lista.add(mapear(rs));
-        }
-        conn.close();
-        return lista;
-    }
-
-    // Método auxiliar para no repetir el mapeo en cada consulta
     private Inventario mapear(ResultSet rs) throws Exception {
         Inventario i = new Inventario();
         i.setIdInventario(rs.getInt("id_inventario"));
