@@ -22,6 +22,7 @@ public class VistaEmpleados extends javax.swing.JFrame {
     public VistaEmpleados() {
         initComponents();
         TemaPurpura.aplicar(this);
+        this.setLocationRelativeTo(null);
 
     }
 

@@ -20,7 +20,7 @@ public class VistaVentas extends javax.swing.JFrame {
     public VistaVentas() {
         initComponents();
         TemaPurpura.aplicar(this);
-
+        this.setLocationRelativeTo(null);
     }
 
     /**

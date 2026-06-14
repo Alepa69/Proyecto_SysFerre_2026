@@ -20,6 +20,7 @@ public class VistaInventario extends javax.swing.JFrame {
     public VistaInventario() {
         initComponents();
         TemaPurpura.aplicar(this);
+        this.setLocationRelativeTo(null);
 
     }
 

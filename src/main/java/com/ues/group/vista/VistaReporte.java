@@ -20,6 +20,7 @@ public class VistaReporte extends javax.swing.JFrame {
     public VistaReporte() {
         initComponents();
         TemaPurpura.aplicar(this);
+        this.setLocationRelativeTo(null);
 
     }
 

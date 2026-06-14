@@ -27,6 +27,7 @@ public class VistaClientes extends javax.swing.JFrame {
     public VistaClientes() {
         initComponents();
         TemaPurpura.aplicar(this);
+        this.setLocationRelativeTo(null);
 
     }
 

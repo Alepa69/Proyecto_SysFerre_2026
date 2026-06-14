@@ -23,6 +23,7 @@ public class VistaMenuPrincipal extends javax.swing.JFrame {
     public VistaMenuPrincipal() {
         initComponents();
         TemaPurpura.aplicar(this);
+        this.setLocationRelativeTo(null);
 
     }
 

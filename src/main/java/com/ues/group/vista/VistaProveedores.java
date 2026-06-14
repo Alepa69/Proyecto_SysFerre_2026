@@ -22,6 +22,7 @@ public class VistaProveedores extends javax.swing.JFrame {
     public VistaProveedores() {
         initComponents();
         TemaPurpura.aplicar(this);
+        this.setLocationRelativeTo(null);
 
     }
 
