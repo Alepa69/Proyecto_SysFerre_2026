@@ -4,33 +4,51 @@
  */
 package modelo;
 
-import java.math.BigDecimal;
-
 /**
  *
- * @author natha
+ * @author alexi
  */
-
-public class DetalleCompra {
-
+public class DetalleCompra implements Comparable<DetalleCompra> {
+    private int idProveedor;
+    private Proveedor proveedor;
     private int idDetalle;
     private int cantidad;
-    private BigDecimal precioUnitario;
+    private double precioUnitario;
     private int idCompra;
     private int idProducto;
-    private Producto producto; // objeto relacionado (opcional)
+    private Producto producto;
 
     public DetalleCompra() {
     }
 
-    public DetalleCompra(int idDetalle, int cantidad, BigDecimal precioUnitario,
-            int idCompra, int idProducto) {
+    public DetalleCompra(int idProveedor, Proveedor proveedor, int idDetalle, int cantidad, double precioUnitario, int idCompra, int idProducto, Producto producto) {
+        this.idProveedor = idProveedor;
+        this.proveedor = proveedor;
         this.idDetalle = idDetalle;
         this.cantidad = cantidad;
         this.precioUnitario = precioUnitario;
         this.idCompra = idCompra;
         this.idProducto = idProducto;
+        this.producto = producto;
     }
+
+    public int getIdProveedor() {
+        return idProveedor;
+    }
+
+    public void setIdProveedor(int idProveedor) {
+        this.idProveedor = idProveedor;
+    }
+
+    public Proveedor getProveedor() {
+        return proveedor;
+    }
+
+    public void setProveedor(Proveedor proveedor) {
+        this.proveedor = proveedor;
+    }
+
+    
 
     public int getIdDetalle() {
         return idDetalle;
@@ -48,11 +66,11 @@ public class DetalleCompra {
         this.cantidad = cantidad;
     }
 
-    public BigDecimal getPrecioUnitario() {
+    public double getPrecioUnitario() {
         return precioUnitario;
     }
 
-    public void setPrecioUnitario(BigDecimal precioUnitario) {
+    public void setPrecioUnitario(double precioUnitario) {
         this.precioUnitario = precioUnitario;
     }
 
@@ -80,8 +98,14 @@ public class DetalleCompra {
         this.producto = producto;
     }
 
-    public BigDecimal getSubtotal() {
-        return precioUnitario.multiply(new BigDecimal(cantidad));
+    public double getSubtotal() {
+        return this.precioUnitario * this.cantidad;
+    }
+
+    @Override
+    public int compareTo(DetalleCompra otro) {
+        // Compara los detalles de compra basándose en su ID único para el Árbol B
+        return Integer.compare(this.idDetalle, otro.idDetalle);
     }
 
     @Override

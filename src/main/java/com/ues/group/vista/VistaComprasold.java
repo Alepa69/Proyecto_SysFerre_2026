@@ -6,22 +6,25 @@ package com.ues.group.vista;
 
 import com.ues.group.vista.util.TemaPurpura;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author mendo
  */
-public class VistaCompras extends javax.swing.JFrame {
+public class VistaComprasold extends javax.swing.JFrame {
 
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(VistaCompras.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(VistaComprasold.class.getName());
 
     /**
      * Creates new form NewJFrame
      */
-    public VistaCompras() {
+    public VistaComprasold() {
         initComponents();
         TemaPurpura.aplicar(this);
-
     }
 
     /**
@@ -62,6 +65,9 @@ public class VistaCompras extends javax.swing.JFrame {
         txtFecha = new javax.swing.JTextField();
         cmbProveedor = new javax.swing.JComboBox();
         cmbCategoria = new javax.swing.JComboBox();
+        jLabel1 = new javax.swing.JLabel();
+        btnBuscar = new javax.swing.JButton();
+        txtBuscador = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -261,6 +267,10 @@ public class VistaCompras extends javax.swing.JFrame {
                 .addGap(50, 50, Short.MAX_VALUE))
         );
 
+        jLabel1.setText("Buscar ID");
+
+        btnBuscar.setText("Buscar");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -274,6 +284,14 @@ public class VistaCompras extends javax.swing.JFrame {
                     .addComponent(pnlTotales, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(pnlBotones, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(20, 20, 20))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(115, 115, 115)
+                .addComponent(jLabel1)
+                .addGap(18, 18, 18)
+                .addComponent(txtBuscador, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnBuscar)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -282,13 +300,18 @@ public class VistaCompras extends javax.swing.JFrame {
                 .addComponent(lblTitulo, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(10, 10, 10)
                 .addComponent(pnlDatos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(10, 10, 10)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(btnBuscar)
+                    .addComponent(txtBuscador, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 24, Short.MAX_VALUE)
                 .addComponent(pnlDetalle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(10, 10, 10)
                 .addComponent(pnlTotales, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(10, 10, 10)
                 .addComponent(pnlBotones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addGap(32, 32, 32))
         );
 
         pack();
@@ -324,7 +347,7 @@ public class VistaCompras extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new VistaCompras().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new VistaComprasold().setVisible(true));
     }
 
     public JButton getBtnAgregar() {
@@ -343,15 +366,67 @@ public class VistaCompras extends javax.swing.JFrame {
         return btnRegistrar;
     }
 
+    public JButton getBtnBuscar() {
+        return btnBuscar;
+    }
+
+    public JComboBox getCmbCategoria() {
+        return cmbCategoria;
+    }
+
+    public JComboBox getCmbProducto() {
+        return cmbProducto;
+    }
+
+    public JComboBox getCmbProveedor() {
+        return cmbProveedor;
+    }
+
+    public JTextField getTxtBuscador() {
+        return txtBuscador;
+    }
+
+    public JTextField getTxtCantidad() {
+        return txtCantidad;
+    }
+
+    public JTextField getTxtFecha() {
+        return txtFecha;
+    }
+
+    public JTextField getTxtIdCompra() {
+        return txtIdCompra;
+    }
+
+    public JTextField getTxtPrecio() {
+        return txtPrecio;
+    }
+
+    public JTextField getTxtTotalCompra() {
+        return txtTotalCompra;
+    }
+
+    public JTextField getTxtTotalProveedor() {
+        return txtTotalProveedor;
+    }
+
+    public JTable getTblDetalleCompra() {
+        return tblDetalleCompra;
+    }
+    
+    
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton btnAgregar;
     private javax.swing.JButton btnBack;
+    private javax.swing.JButton btnBuscar;
     public javax.swing.JButton btnCancelar;
     public javax.swing.JButton btnRegistrar;
     public javax.swing.JComboBox cmbCategoria;
     public javax.swing.JComboBox cmbProducto;
     public javax.swing.JComboBox cmbProveedor;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel lblCantidad;
     private javax.swing.JLabel lblCategoria;
     private javax.swing.JLabel lblFecha;
@@ -368,6 +443,7 @@ public class VistaCompras extends javax.swing.JFrame {
     private javax.swing.JPanel pnlTotales;
     private javax.swing.JScrollPane scrDetalle;
     public javax.swing.JTable tblDetalleCompra;
+    private javax.swing.JTextField txtBuscador;
     public javax.swing.JTextField txtCantidad;
     public javax.swing.JTextField txtFecha;
     public javax.swing.JTextField txtIdCompra;
