@@ -9,6 +9,8 @@ import modelo.CompraProveedor;
 import modelo.DetalleCompra;
 import com.ues.group.vista.VistaReabastecimientoHistorial;
 
+import Arboles.ArbolBusqueda;
+
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.time.format.DateTimeFormatter;
@@ -18,7 +20,7 @@ import java.util.List;
  *
  * @author alexi
  */
-public class ControladorHistorialReabastecimiento {
+public class ControladorHistorialReabastecimiento  {
     private VistaReabastecimientoHistorial vista;
     private CompraDAO dao;
     private List<CompraProveedor> listaCompras; 
@@ -62,9 +64,9 @@ public class ControladorHistorialReabastecimiento {
         DefaultTableModel modeloDetalle = (DefaultTableModel) vista.getTblDetalleCompra().getModel();
         modeloDetalle.setRowCount(0); 
         try {
-            List<DetalleCompra> detalles = dao.buscarDetalles(compraSeleccionada.getIdCompra());
+            ArbolBusqueda<DetalleCompra> arbol = dao.buscarDetalles(compraSeleccionada.getIdCompra());
 
-            for (DetalleCompra d : detalles) {
+            for (DetalleCompra d : arbol.IND()) {
                 String nombreProducto = "Sin descripción";
                 if (d.getProducto() != null) {
                     nombreProducto = d.getProducto().getDescripcion();

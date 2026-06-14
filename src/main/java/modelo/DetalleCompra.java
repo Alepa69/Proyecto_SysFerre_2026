@@ -102,12 +102,15 @@ public class DetalleCompra implements Comparable<DetalleCompra> {
         return this.precioUnitario * this.cantidad;
     }
 
-    @Override
-    public int compareTo(DetalleCompra otro) {
-        // Compara los detalles de compra basándose en su ID único para el Árbol B
+    //lo de q solo me aparecia una vez cada producto
+   @Override
+public int compareTo(DetalleCompra otro) {
+    int cmp = Integer.compare(this.idProducto, otro.idProducto);
+    if (cmp == 0) {
         return Integer.compare(this.idDetalle, otro.idDetalle);
     }
-
+    return cmp;
+}
     @Override
     public String toString() {
         return "Detalle #" + idDetalle + " - Cant: " + cantidad;

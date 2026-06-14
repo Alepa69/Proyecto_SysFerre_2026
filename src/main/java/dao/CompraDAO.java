@@ -12,6 +12,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import Arboles.ArbolBusqueda;
 import conexion.Conexion;
 import modelo.CompraProveedor;
 import modelo.DetalleCompra;
@@ -72,8 +73,8 @@ public class CompraDAO {
         return idGenerado;
     }
 
-    public List<DetalleCompra> buscarDetalles(int idCompra) throws Exception {
-    List<DetalleCompra> datos = new ArrayList<>();
+    public ArbolBusqueda<DetalleCompra> buscarDetalles(int idCompra) throws Exception {
+    ArbolBusqueda<DetalleCompra> datos = new ArbolBusqueda<>();
     String consulta = """
             SELECT dc.id_detallecompra, dc.cantidad, dc.precio, dc.id_compra, 
                    dc.id_producto, p.descripcion, prov.nombre AS nombre_proveedor, dc.id_proveedor 
@@ -105,7 +106,7 @@ public class CompraDAO {
                 prov.setNombre(rs.getString("nombre_proveedor"));
                 d.setProveedor(prov);
 
-                datos.add(d);
+                datos.insertar(d);
             }
         }
     } catch (Exception e) {
