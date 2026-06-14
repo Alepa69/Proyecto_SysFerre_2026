@@ -1,7 +1,7 @@
 package controlador;
 
 import com.ues.group.vista.VistaProveedores;
-import Arboles.ArbolBusqueda; 
+import Arboles.ArbolBusqueda;
 import dao.ProveedoresDAO;
 import modelo.Proveedor;
 
@@ -15,6 +15,7 @@ public class ControladorProveedores {
     private final VistaProveedores vista;
     private final ProveedoresDAO dao;
     private ArbolBusqueda<Proveedor> arbolBase;
+    // arbol cargaddo de la bd, reutilizado parra busqueda y ordenamiento
 
     public ControladorProveedores(VistaProveedores vista) {
         this.vista = vista;
@@ -58,7 +59,7 @@ public class ControladorProveedores {
         vista.dispose();
     }
 
-    // ─── BÚSQUEDA CON ÁRBOL DE BÚSQUEDA ──────────────────────────────────────
+    // busqueda con arbol busqueda
     private void buscar() {
         String texto = vista.txtbuscarIdProveedor.getText().trim();
         if (texto.isEmpty()) {
@@ -83,6 +84,7 @@ public class ControladorProveedores {
 
         List<Proveedor> listaActual = arbolBase.IND();
 
+        // arbol auxiliar para busqueda sencilla por id
         ArbolBusqueda<Integer> arbol = new ArbolBusqueda<>();
         for (Proveedor p : listaActual) {
             arbol.insertar(p.getIdProveedor());
@@ -131,6 +133,8 @@ public class ControladorProveedores {
         String criterio = vista.cmbOrdenarProveedor.getSelectedItem().toString();
         List<Proveedor> ordenados;
 
+        // segun el criterio construimos un arbol distinto con el campo a ordenar
+        // el inorden de cada arbol nos da la lista ya ordenada por ese campo
         switch (criterio) {
             case "ID":
                 ordenados = ordenarPorId();
@@ -150,13 +154,15 @@ public class ControladorProveedores {
 
     @SuppressWarnings("unchecked")
     private List<Proveedor> ordenarPorId() {
+        // insertamos solo los id en un arbol nuevo
+        // como es ind obtenemos los id en orden ascendente
         ArbolBusqueda<Integer> arbol = new ArbolBusqueda<>();
         List<Proveedor> listaActual = arbolBase.IND();
         for (Proveedor p : listaActual) {
             arbol.insertar(p.getIdProveedor());
         }
 
-        // ind para simplificar
+        // ind para simplificar respetando el orden que dio el arbol
         List<Integer> idsOrdenados = arbol.IND();
 
         List<Proveedor> copiaActual = new ArrayList<>(listaActual);
@@ -178,7 +184,6 @@ public class ControladorProveedores {
     private List<Proveedor> ordenarPorNombre() {
         List<Proveedor> listaActual = arbolBase.IND();
 
-    
         ArbolBusqueda<String> arbol = new ArbolBusqueda<>();
         for (Proveedor p : listaActual) {
             arbol.insertar(p.getNombre().toLowerCase());
@@ -189,6 +194,7 @@ public class ControladorProveedores {
         List<Proveedor> resultado = new ArrayList<>();
         for (String nombre : nombresOrdenados) {
             copiaActual.stream()
+                    // usamos tolowecaser para que la comparacion no distinga mayus de minus
                     .filter(p -> p.getNombre().toLowerCase().equals(nombre))
                     .findFirst()
                     .ifPresent(p -> {
@@ -213,6 +219,7 @@ public class ControladorProveedores {
         List<Proveedor> resultado = new ArrayList<>();
         for (String nit : nitsOrdenados) {
             copiaActual.stream()
+                    // implementamos de la misma manera arbol de string para ordenar alfabeticamente
                     .filter(p -> p.getNit().toLowerCase().equals(nit))
                     .findFirst()
                     .ifPresent(p -> {
@@ -223,7 +230,7 @@ public class ControladorProveedores {
         return resultado;
     }
 
-    // crud 
+    // crud
     private void guardar() {
         if (!validarCampos())
             return;

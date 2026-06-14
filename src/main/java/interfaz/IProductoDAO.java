@@ -14,7 +14,7 @@ public interface IProductoDAO {
 
     void eliminar(int idProducto) throws Exception;
 
-    ArbolBusqueda<Producto> listar() throws Exception; // antes era List<Producto>
+    ArbolBusqueda<Producto> listar() throws Exception; 
 
     Producto buscar(int idProducto) throws Exception;
 

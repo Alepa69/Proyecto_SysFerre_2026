@@ -14,13 +14,14 @@ public class ControladorProducto {
 
     private final VistaProductos vista;
     private final ProductoDAO dao;
-    private ArbolBusqueda<Producto> arbolBase; // árbol principal, espejo de la BD
+    private ArbolBusqueda<Producto> arbolBase;
+    // arbol principal refleja datos de la bd
 
     public ControladorProducto(VistaProductos vista) {
         this.vista = vista;
         this.dao = new ProductoDAO();
         iniciarEventos();
-        cargarTabla(); 
+        cargarTabla();
     }
 
     private void iniciarEventos() {
@@ -49,7 +50,7 @@ public class ControladorProducto {
         vista.dispose();
     }
 
-    // implementacion busqueda con arbol 
+    // implementacion busqueda con arbol
     private void buscar() {
         String texto = vista.txtId.getText().trim();
         if (texto.isEmpty()) {
@@ -73,8 +74,10 @@ public class ControladorProducto {
             return;
         }
 
-        // auxiliar de id para la busqueeda binaria
+        // liista ordenada del arbol principal en inorden
         List<Producto> listaActual = arbolBase.IND();
+
+        // arbol auxiliar solo con los id para facilitar la buusqueda
         ArbolBusqueda<Integer> arbolIds = new ArbolBusqueda<>();
         for (Producto p : listaActual) {
             arbolIds.insertar(p.getIdProducto());
@@ -87,6 +90,7 @@ public class ControladorProducto {
             return;
         }
 
+        // si existe recupera el producto completo
         Producto resultado = listaActual.stream()
                 .filter(p -> p.getIdProducto() == idBuscado)
                 .findFirst()
@@ -191,7 +195,7 @@ public class ControladorProducto {
 
     private void cargarTabla() {
         try {
-            arbolBase = dao.listar(); 
+            arbolBase = dao.listar();// retornamos un arbolBusqueda con productos ya insertados
             poblarTabla(arbolBase.IND()); // IND = inorden = ordenado por descripción
         } catch (Exception e) {
             JOptionPane.showMessageDialog(vista, "Error al cargar tabla: " + e.getMessage(),
