@@ -1,22 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dao;
 
+import Arboles.ArbolBusqueda;
+import Arboles.Nodo;
 import conexion.Conexion;
 import interfaz.IInventarioDAO;
-
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import Arboles.ArbolBusqueda;
-import Arboles.Nodo;
 import modelo.Inventario;
 
 /**
@@ -95,152 +87,83 @@ public class InventarioDAO implements IInventarioDAO {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<Inventario> listar() throws Exception {
-        List<Inventario> raw = listarDesdeBD();
-
-        ArbolBusqueda<NodoInventario> arbol = new ArbolBusqueda<>();
-        for (Inventario inv : raw) {
-            arbol.insertar(new NodoInventario(inv, "ID"));
+    private ArbolBusqueda<Inventario> construirArbol(String criterio) throws Exception {
+        String crit = (criterio == null || criterio.isEmpty()) ? "ID" : criterio;
+        ArbolBusqueda<Inventario> arbol = new ArbolBusqueda<>();
+        Connection conn = Conexion.getConexion();
+        try (PreparedStatement ps = conn.prepareStatement(SELECT_ALL);
+                ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Inventario inv = mapear(rs);
+                inv.setCriterioOrden(crit);
+                arbol.insertar(inv);
+            }
+        } finally {
+            conn.close();
         }
-
-        ArrayList<NodoInventario> inorden = arbol.IND();
-        List<Inventario> resultado = new ArrayList<>();
-        for (NodoInventario n : inorden) {
-            resultado.add(n.inventario);
-        }
-        return resultado;
+        return arbol;
     }
 
-    @SuppressWarnings("unchecked")
+    @Override
+    public ArbolBusqueda<Inventario> listarOrdenado(String criterio) throws Exception {
+        return construirArbol(criterio);
+    }
+
     @Override
     public Inventario buscar(int idInventario) throws Exception {
-        List<Inventario> raw = listarDesdeBD();
-
-        ArbolBusqueda<NodoInventario> arbol = new ArbolBusqueda<>();
-        for (Inventario inv : raw) {
-            arbol.insertar(new NodoInventario(inv, "ID"));
-        }
+        ArbolBusqueda<Inventario> arbol = construirArbol("ID");
 
         Inventario clave = new Inventario();
         clave.setIdInventario(idInventario);
-        Nodo encontrado = arbol.buscar(new NodoInventario(clave, "ID"));
+        clave.setCriterioOrden("ID");
 
-        return encontrado != null ? ((NodoInventario) encontrado.getDato()).inventario : null;
+        Nodo encontrado = arbol.buscar(clave);
+        return encontrado != null ? (Inventario) encontrado.getDato() : null;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public List<Inventario> buscarPorNombre(String texto) throws Exception {
-        List<Inventario> raw = listarDesdeBD();
-        List<Inventario> filtrada = new ArrayList<>();
-
-        ArbolBusqueda<NodoInventario> arbol = new ArbolBusqueda<>();
-        for (Inventario inv : raw) {
-            arbol.insertar(new NodoInventario(inv, "Nombre A-Z"));
-        }
+    public ArbolBusqueda<Inventario> buscarPorNombre(String texto) throws Exception {
+        ArbolBusqueda<Inventario> base = construirArbol("Nombre A-Z");
+        ArbolBusqueda<Inventario> resultado = new ArbolBusqueda<>();
 
         Inventario clave = new Inventario();
         clave.setNombreProducto(texto);
-        Nodo encontrado = arbol.buscar(new NodoInventario(clave, "Nombre A-Z"));
+        clave.setCriterioOrden("Nombre A-Z");
 
+        Nodo encontrado = base.buscar(clave);
         if (encontrado != null) {
-            filtrada.add(((NodoInventario) encontrado.getDato()).inventario);
+            resultado.insertar((Inventario) encontrado.getDato());
         } else {
-            String textoBusq = texto.toLowerCase();
-            ArrayList<NodoInventario> inorden = arbol.IND();
-            for (NodoInventario n : inorden) {
-                if (n.inventario.getNombreProducto() != null
-                        && n.inventario.getNombreProducto()
-                                .toLowerCase().contains(textoBusq)) {
-                    filtrada.add(n.inventario);
-                }
-            }
+            filtrarPorNombre(base.getRaiz(), texto.toLowerCase(), resultado);
         }
-
-        return filtrada;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public List<Inventario> listarOrdenado(String criterio) throws Exception {
-        List<Inventario> raw = listarDesdeBD();
-
-        ArbolBusqueda<NodoInventario> arbol = new ArbolBusqueda<>();
-        for (Inventario inv : raw) {
-            arbol.insertar(new NodoInventario(inv, criterio));
-        }
-
-        ArrayList<NodoInventario> inorden = arbol.IND();
-        List<Inventario> resultado = new ArrayList<>();
-        for (NodoInventario n : inorden) {
-            resultado.add(n.inventario);
-        }
-
-        if ("Stock Descendente".equals(criterio)) {
-            Collections.reverse(resultado);
-        }
-
         return resultado;
     }
 
-    private List<Inventario> listarDesdeBD() throws Exception {
-        List<Inventario> lista = new ArrayList<>();
-        Connection conn = Conexion.getConexion();
-        PreparedStatement ps = conn.prepareStatement(SELECT_ALL);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            lista.add(mapear(rs));
+    private void filtrarPorNombre(Nodo r, String textoBusq, ArbolBusqueda<Inventario> resultado) {
+        if (r != null) {
+            filtrarPorNombre(r.getRamaIzq(), textoBusq, resultado);
+            Inventario inv = (Inventario) r.getDato();
+            String nombre = inv.getNombreProducto();
+            if (nombre != null && nombre.toLowerCase().contains(textoBusq)) {
+                resultado.insertar(inv);
+            }
+            filtrarPorNombre(r.getRamaDrch(), textoBusq, resultado);
         }
-        conn.close();
-        return lista;
     }
 
-    private static class NodoInventario implements Comparable<NodoInventario> {
+    @Override
+    public List<Inventario> listar() throws Exception {
+        ArbolBusqueda<Inventario> arbol = construirArbol("ID");
+        List<Inventario> resultado = new ArrayList<>();
+        aplanarInOrden(arbol.getRaiz(), resultado);
+        return resultado;
+    }
 
-        final Inventario inventario;
-        final String criterio;
-
-        NodoInventario(Inventario inventario, String criterio) {
-            this.inventario = inventario;
-            this.criterio = criterio;
-        }
-
-        @Override
-        public int compareTo(NodoInventario otro) {
-            int c;
-            switch (criterio) {
-                case "Nombre A-Z" ->
-                    c = compararTexto(inventario.getNombreProducto(),
-                            otro.inventario.getNombreProducto());
-                case "Precio" ->
-                    c = compararPrecio(inventario.getPrecioUnitario(),
-                            otro.inventario.getPrecioUnitario());
-                case "Stock Ascendente", "Stock Descendente" ->
-                    c = Integer.compare(inventario.getStockDisponible(),
-                            otro.inventario.getStockDisponible());
-                case "ID" ->
-                    c = Integer.compare(inventario.getIdInventario(),
-                            otro.inventario.getIdInventario());
-                default ->
-                    c = Integer.compare(inventario.getIdInventario(),
-                            otro.inventario.getIdInventario());
-            }
-            if (c == 0) {
-                c = Integer.compare(inventario.getIdInventario(),
-                        otro.inventario.getIdInventario());
-            }
-            return c;
-        }
-
-        private int compararTexto(String a, String b) {
-            return (a == null ? "" : a).compareToIgnoreCase(b == null ? "" : b);
-        }
-
-        private int compararPrecio(BigDecimal a, BigDecimal b) {
-            return (a == null ? BigDecimal.ZERO : a)
-                    .compareTo(b == null ? BigDecimal.ZERO : b);
+    private void aplanarInOrden(Nodo r, List<Inventario> destino) {
+        if (r != null) {
+            aplanarInOrden(r.getRamaIzq(), destino);
+            destino.add((Inventario) r.getDato());
+            aplanarInOrden(r.getRamaDrch(), destino);
         }
     }
 

@@ -62,8 +62,8 @@ public class ControladorMenu {
 
     private void llamarInventario() {
         VistaInventario vi = new VistaInventario();
-        // new ControladorInventario(vi);
-        // vi.setVisible(true);
+        new ControladorInventario(vi);
+        vi.setVisible(true);
         // vista.dispose();
     }
 

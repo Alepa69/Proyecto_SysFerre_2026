@@ -1,10 +1,11 @@
 package controlador;
 
+import Arboles.ArbolBusqueda;
+import Arboles.Nodo;
 import com.ues.group.vista.VistaInventario;
 import dao.InventarioDAO;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -40,9 +41,31 @@ public class ControladorInventario {
         vista.btnRegresar.addActionListener(e -> vista.dispose());
     }
 
+    private String criterioSeleccionado() {
+        return vista.cmbOrdenar.getSelectedItem() == null
+                ? "ID"
+                : vista.cmbOrdenar.getSelectedItem().toString();
+    }
+
     private void cargarTabla() {
+        mostrarOrdenado(criterioSeleccionado());
+    }
+
+    private void ordenarTabla() {
+        mostrarOrdenado(criterioSeleccionado());
+    }
+
+    private void mostrarOrdenado(String criterio) {
         try {
-            llenarTabla(dao.listar());
+            ArbolBusqueda<Inventario> arbol = dao.listarOrdenado(criterio);
+            DefaultTableModel modelo = (DefaultTableModel) vista.tblInventario.getModel();
+            modelo.setRowCount(0);
+
+            if ("Stock Descendente".equals(criterio)) {
+                recorrerDescendente(arbol.getRaiz(), modelo); // derecha-nodo-izquierda
+            } else {
+                recorrerInOrden(arbol.getRaiz(), modelo); // izquierda-nodo-derecha
+            }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(vista,
                     "Error al cargar inventario: " + e.getMessage(),
@@ -53,14 +76,18 @@ public class ControladorInventario {
     private void buscar() {
         try {
             String texto = vista.txtBuscar.getText().trim();
-            List<Inventario> resultado;
+            DefaultTableModel modelo = (DefaultTableModel) vista.tblInventario.getModel();
+            modelo.setRowCount(0);
+
             if (texto.matches("\\d+")) {
                 Inventario inv = dao.buscar(Integer.parseInt(texto));
-                resultado = inv != null ? List.of(inv) : List.of();
+                if (inv != null) {
+                    agregarFila(modelo, inv);
+                }
             } else {
-                resultado = dao.buscarPorNombre(texto);
+                ArbolBusqueda<Inventario> arbol = dao.buscarPorNombre(texto);
+                recorrerInOrden(arbol.getRaiz(), modelo);
             }
-            llenarTabla(resultado);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(vista,
                     "Error al buscar: " + e.getMessage(),
@@ -68,32 +95,31 @@ public class ControladorInventario {
         }
     }
 
-    private void ordenarTabla() {
-        try {
-            String criterio = vista.cmbOrdenar.getSelectedItem() == null
-                    ? ""
-                    : vista.cmbOrdenar.getSelectedItem().toString();
-            llenarTabla(dao.listarOrdenado(criterio));
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(vista,
-                    "Error al ordenar: " + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+    private void recorrerInOrden(Nodo r, DefaultTableModel modelo) {
+        if (r != null) {
+            recorrerInOrden(r.getRamaIzq(), modelo);
+            agregarFila(modelo, (Inventario) r.getDato());
+            recorrerInOrden(r.getRamaDrch(), modelo);
         }
     }
 
-    private void llenarTabla(List<Inventario> lista) {
-        DefaultTableModel modelo = (DefaultTableModel) vista.tblInventario.getModel();
-        modelo.setRowCount(0);
-        for (Inventario inv : lista) {
-            modelo.addRow(new Object[] {
-                    inv.getIdInventario(),
-                    inv.getIdProducto(),
-                    inv.getNombreProducto(),
-                    inv.getPrecioUnitario(),
-                    inv.getDescripcion(),
-                    inv.getStockDisponible()
-            });
+    private void recorrerDescendente(Nodo r, DefaultTableModel modelo) {
+        if (r != null) {
+            recorrerDescendente(r.getRamaDrch(), modelo);
+            agregarFila(modelo, (Inventario) r.getDato());
+            recorrerDescendente(r.getRamaIzq(), modelo);
         }
+    }
+
+    private void agregarFila(DefaultTableModel modelo, Inventario inv) {
+        modelo.addRow(new Object[] {
+                inv.getIdInventario(),
+                inv.getIdProducto(),
+                inv.getNombreProducto(),
+                inv.getPrecioUnitario(),
+                inv.getDescripcion(),
+                inv.getStockDisponible()
+        });
     }
 
     private void exportar() {
