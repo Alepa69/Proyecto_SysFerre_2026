@@ -13,7 +13,7 @@ import controlador.ControladorLogin;
 public class Proyecto_STD {
 
     public static void main(String[] args) {
-        // Look and feel Nimbus (opcional, deja la app más bonita)
+        // Look and feel Nimbus (opcional, deja la app mas bonita)
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info
                     : javax.swing.UIManager.getInstalledLookAndFeels()) {

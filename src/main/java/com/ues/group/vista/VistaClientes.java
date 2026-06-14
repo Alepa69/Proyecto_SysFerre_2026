@@ -57,6 +57,11 @@ public class VistaClientes extends javax.swing.JFrame {
         scrTabla = new javax.swing.JScrollPane();
         tblClientes = new javax.swing.JTable();
         btnBack = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        cbOrdenCliente = new javax.swing.JComboBox<>();
+        rbOrdenAscCliente = new javax.swing.JRadioButton();
+        rbOrdenDescCliente1 = new javax.swing.JRadioButton();
+        btnOrdenarClientes = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -125,7 +130,7 @@ public class VistaClientes extends javax.swing.JFrame {
                         .addComponent(btnBuscar))
                     .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtApellido, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 91, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         pnlDatosLayout.setVerticalGroup(
             pnlDatosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -167,6 +172,16 @@ public class VistaClientes extends javax.swing.JFrame {
             }
         });
 
+        jLabel1.setText("Ordenar por: ");
+
+        cbOrdenCliente.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID", "NOMBRE", "APELLIDO" }));
+
+        rbOrdenAscCliente.setText("Ascendente");
+
+        rbOrdenDescCliente1.setText("Descendente");
+
+        btnOrdenarClientes.setText("Ordenar");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -174,15 +189,26 @@ public class VistaClientes extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblTitulo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(pnlDatos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(pnlBotones, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(scrTabla))
-                .addGap(20, 20, 20))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(276, 276, 276)
-                .addComponent(btnBack)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(cbOrdenCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(rbOrdenAscCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(rbOrdenDescCliente1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnOrdenarClientes)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnBack)
+                        .addGap(29, 29, 29))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblTitulo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(pnlDatos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(pnlBotones, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(scrTabla))
+                        .addGap(20, 20, 20))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -195,9 +221,16 @@ public class VistaClientes extends javax.swing.JFrame {
                 .addComponent(pnlBotones, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(10, 10, 10)
                 .addComponent(scrTabla, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(32, 32, 32)
-                .addComponent(btnBack)
-                .addContainerGap(48, Short.MAX_VALUE))
+                .addGap(30, 30, 30)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnBack)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel1)
+                        .addComponent(cbOrdenCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(rbOrdenAscCliente)
+                        .addComponent(rbOrdenDescCliente1)
+                        .addComponent(btnOrdenarClientes)))
+                .addContainerGap(32, Short.MAX_VALUE))
         );
 
         pack();
@@ -269,12 +302,17 @@ public class VistaClientes extends javax.swing.JFrame {
     public javax.swing.JButton btnLimpiar;
     public javax.swing.JButton btnModificar;
     public javax.swing.JButton btnNuevo;
+    public javax.swing.JButton btnOrdenarClientes;
+    public javax.swing.JComboBox<String> cbOrdenCliente;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel lblApellido;
     private javax.swing.JLabel lblId;
     private javax.swing.JLabel lblNombre;
     private javax.swing.JLabel lblTitulo;
     private javax.swing.JPanel pnlBotones;
     private javax.swing.JPanel pnlDatos;
+    public javax.swing.JRadioButton rbOrdenAscCliente;
+    public javax.swing.JRadioButton rbOrdenDescCliente1;
     private javax.swing.JScrollPane scrTabla;
     public javax.swing.JTable tblClientes;
     public javax.swing.JTextField txtApellido;
