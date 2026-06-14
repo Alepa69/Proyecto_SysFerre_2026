@@ -1,5 +1,6 @@
 package dao;
 
+import Arboles.ArbolAVL;
 import conexion.Conexion;
 import interfaz.IProductoDAO;
 
@@ -76,9 +77,8 @@ public class ProductoDAO implements IProductoDAO {
         }
     }
 
-    // ── CAMBIO CLAVE: retorna ArbolBusqueda en lugar de List ─────────────────
-    public ArbolBusqueda<Producto> listar() throws Exception {
-        ArbolBusqueda<Producto> arbol = new ArbolBusqueda<>();
+    public ArbolAVL<Producto> listar() throws Exception {
+        ArbolAVL<Producto> arbol = new ArbolAVL<>();
         Connection conn = Conexion.getConexion();
         PreparedStatement ps = conn.prepareStatement(SELECT_ALL);
         ResultSet rs = ps.executeQuery();
@@ -89,7 +89,7 @@ public class ProductoDAO implements IProductoDAO {
             p.setTipo(rs.getString("tipo"));
             p.setPrecio(rs.getBigDecimal("precio"));
             p.setStock(rs.getInt("stock"));
-            arbol.insertar(p); // se ordena automáticamente por compareTo (descripcion)
+            arbol.insertar(p);
         }
         conn.close();
         return arbol;

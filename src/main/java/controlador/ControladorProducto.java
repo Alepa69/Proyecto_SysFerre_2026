@@ -1,5 +1,6 @@
 package controlador;
 
+import Arboles.ArbolAVL;
 import com.ues.group.vista.VistaProductos;
 import dao.ProductoDAO;
 import modelo.Producto;
@@ -7,15 +8,16 @@ import Arboles.ArbolBusqueda;
 
 import javax.swing.table.DefaultTableModel;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
+
 
 public class ControladorProducto {
 
     private final VistaProductos vista;
     private final ProductoDAO dao;
-    private ArbolBusqueda<Producto> arbolBase; // árbol principal, espejo de la BD
-
+    private ArbolAVL<Producto> arbolBase;           
     public ControladorProducto(VistaProductos vista) {
         this.vista = vista;
         this.dao = new ProductoDAO();
@@ -195,14 +197,20 @@ public class ControladorProducto {
     }
 
     private void cargarTabla() {
-        try {
-            arbolBase = dao.listar(); // construye el árbol desde BD
-            poblarTabla(arbolBase.IND()); // IND() = inorden = ordenado por descripción
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(vista, "Error al cargar tabla: " + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+    try {
+        arbolBase = dao.listar(); // construye el árbol desde BD
+        
+        ArrayList<Producto> lista = new ArrayList<>();
+        for (Object obj : arbolBase.IND()) {
+            lista.add((Producto) obj);
         }
+        
+        poblarTabla(lista); // IND() = inorden = ordenado por descripción
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(vista, "Error al cargar tabla: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
     }
+}
 
     private void poblarTabla(List<Producto> lista) {
         DefaultTableModel modelo = (DefaultTableModel) vista.tblProductos.getModel();

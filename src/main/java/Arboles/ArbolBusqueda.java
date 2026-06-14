@@ -46,6 +46,29 @@ public class ArbolBusqueda<T extends Comparable<T>> extends ArbolBinario<T> {
         ArrayList<T> a = new ArrayList<>();
         return postOrdenIDN(super.getRaiz(), a);
     }
+    
+    public T buscarDato(T dato) {
+        Nodo<T> nodo = buscar(dato, super.getRaiz());
+        return nodo != null ? nodo.getDato() : null;
+    }
+
+    public boolean existe(T dato) {
+        return buscar(dato, super.getRaiz()) != null;
+    }
+
+    private Nodo<T> buscar(T dato, Nodo<T> r) {
+        if (r == null) {
+            return null;
+        }
+        int cmp = dato.compareTo(r.getDato());
+        if (cmp < 0) {
+            return buscar(dato, r.getRamaIzq());
+        }
+        if (cmp > 0) {
+            return buscar(dato, r.getRamaDrch());
+        }
+        return r; // encontrado
+    }
 
     public void quitar(T dato) {
         super.setRaiz(eliminar(dato, super.getRaiz()));

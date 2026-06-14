@@ -1,6 +1,7 @@
 
 package interfaz;
 
+import Arboles.ArbolAVL;
 import java.util.List;
 
 import Arboles.ArbolBusqueda;
@@ -14,7 +15,7 @@ public interface IProductoDAO {
 
     void eliminar(int idProducto) throws Exception;
 
-    ArbolBusqueda<Producto> listar() throws Exception; // antes era List<Producto>
+    public ArbolAVL<Producto> listar() throws Exception;
 
     Producto buscar(int idProducto) throws Exception;
 

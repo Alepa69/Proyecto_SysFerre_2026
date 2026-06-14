@@ -16,7 +16,7 @@ public class Conexion {
 
     private static final String URL = "jdbc:postgresql://localhost:5432/bd_ferreteria";
     private static final String USER = "postgres";
-    private static final String PASSWORD = "root";
+    private static final String PASSWORD = "8659";
 
     public static Connection getConexion() {
         try {
