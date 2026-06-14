@@ -3,8 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package com.ues.group.vista;
+import utileria.TemaPurpura;
 
-import com.ues.group.vista.util.TemaPurpura;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 
@@ -22,6 +22,7 @@ public class VistaProveedores extends javax.swing.JFrame {
     public VistaProveedores() {
         initComponents();
         TemaPurpura.aplicar(this);
+        this.setLocationRelativeTo(null);
 
     }
 

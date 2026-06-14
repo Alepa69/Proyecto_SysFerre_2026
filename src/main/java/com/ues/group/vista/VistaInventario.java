@@ -4,7 +4,7 @@
  */
 package com.ues.group.vista;
 
-import com.ues.group.vista.util.TemaPurpura;
+import utileria.TemaPurpura;
 
 /**
  *
@@ -20,6 +20,7 @@ public class VistaInventario extends javax.swing.JFrame {
     public VistaInventario() {
         initComponents();
         TemaPurpura.aplicar(this);
+        this.setLocationRelativeTo(null);
 
     }
 

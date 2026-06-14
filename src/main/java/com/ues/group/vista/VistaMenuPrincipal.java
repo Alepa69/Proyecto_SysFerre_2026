@@ -4,7 +4,7 @@
  */
 package com.ues.group.vista;
 
-import com.ues.group.vista.util.TemaPurpura;
+import utileria.TemaPurpura;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -23,6 +23,7 @@ public class VistaMenuPrincipal extends javax.swing.JFrame {
     public VistaMenuPrincipal() {
         initComponents();
         TemaPurpura.aplicar(this);
+        this.setLocationRelativeTo(null);
 
     }
 

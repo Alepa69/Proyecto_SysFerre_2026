@@ -5,7 +5,6 @@
 package controlador;
 
 import com.ues.group.vista.VistaClientes;
-import com.ues.group.vista.VistaComprasold;
 import com.ues.group.vista.VistaEmpleados;
 import com.ues.group.vista.VistaInventario;
 import com.ues.group.vista.VistaMenuPrincipal;

@@ -26,7 +26,8 @@ public class ControladorEmpleado {
         vista.btnEliminar.addActionListener(e -> eliminar());
         vista.btnLimpiar.addActionListener(e -> limpiar());
         vista.btnBuscar.addActionListener(e -> buscar());
-        vista.getBtnBack().addActionListener(e -> vista.dispose());
+        vista.btnBack1.addActionListener(e -> volverMenu());
+
 
         vista.tblEmpleados.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -219,5 +220,8 @@ public class ControladorEmpleado {
     private void mostrarError(String titulo, Exception e) {
         JOptionPane.showMessageDialog(vista, titulo + ": " + e.getMessage(),
                 "Error", JOptionPane.ERROR_MESSAGE);
+    }
+        private void volverMenu() {
+        vista.dispose();
     }
 }

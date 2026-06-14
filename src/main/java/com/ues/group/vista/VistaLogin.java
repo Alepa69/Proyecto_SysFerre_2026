@@ -4,7 +4,7 @@
  */
 package com.ues.group.vista;
 
-import com.ues.group.vista.util.TemaPurpura;
+import utileria.TemaPurpura;
 
 /**
  *
@@ -19,7 +19,8 @@ public class VistaLogin extends javax.swing.JFrame {
      */
     public VistaLogin() {
         initComponents();
-        //TemaPurpura.aplicar(this);
+        TemaPurpura.aplicar(this);
+        this.setLocationRelativeTo(null);
 
     }
 

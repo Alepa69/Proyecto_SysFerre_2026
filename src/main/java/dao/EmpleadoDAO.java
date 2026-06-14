@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import modelo.Empleado;
+import utileria.Encriptar;
 
 public class EmpleadoDAO implements IEmpleadoDAO {
 
@@ -43,7 +44,9 @@ public class EmpleadoDAO implements IEmpleadoDAO {
 
             try (PreparedStatement psUsuario = conn.prepareStatement(INSERT_USUARIO)) {
                 psUsuario.setString(1, empleado.getNombreUsuario());
-                psUsuario.setString(2, empleado.getContrasena());
+                /* Agregando el hash de la contraseña */
+                psUsuario.setString(2, utileria.Encriptar.getStringMessageDialog(
+                        empleado.getContrasena(), utileria.Encriptar.SHA256));
                 psUsuario.setInt(3, empleado.getIdEmpleado());
                 psUsuario.executeUpdate();
             }
@@ -69,16 +72,31 @@ public class EmpleadoDAO implements IEmpleadoDAO {
             }
 
             if (existeUsuario(conn, empleado.getIdEmpleado())) {
-                try (PreparedStatement psUsuario = conn.prepareStatement(UPDATE_USUARIO)) {
+                // Si la contra va vacia no se actualiza
+                boolean cambiarContrasena = empleado.getContrasena() != null
+                        && !empleado.getContrasena().trim().isEmpty();
+
+                String sql = cambiarContrasena
+                        ? "UPDATE usuarios SET usuario = ?, contrasena = ? WHERE id_empleado = ?"
+                        : "UPDATE usuarios SET usuario = ? WHERE id_empleado = ?";
+
+                try (PreparedStatement psUsuario = conn.prepareStatement(sql)) {
                     psUsuario.setString(1, empleado.getNombreUsuario());
-                    psUsuario.setString(2, empleado.getContrasena());
-                    psUsuario.setInt(3, empleado.getIdEmpleado());
+                    if (cambiarContrasena) {
+                        psUsuario.setString(2, utileria.Encriptar.getStringMessageDialog(
+                                empleado.getContrasena().trim(), utileria.Encriptar.SHA256));
+                        psUsuario.setInt(3, empleado.getIdEmpleado());
+                    } else {
+                        psUsuario.setInt(2, empleado.getIdEmpleado());
+                    }
                     psUsuario.executeUpdate();
                 }
             } else {
+                // inserta normalmente
                 try (PreparedStatement psUsuario = conn.prepareStatement(INSERT_USUARIO)) {
                     psUsuario.setString(1, empleado.getNombreUsuario());
-                    psUsuario.setString(2, empleado.getContrasena());
+                    psUsuario.setString(2, utileria.Encriptar.getStringMessageDialog(
+                            empleado.getContrasena(), utileria.Encriptar.SHA256));
                     psUsuario.setInt(3, empleado.getIdEmpleado());
                     psUsuario.executeUpdate();
                 }
@@ -173,7 +191,7 @@ public class EmpleadoDAO implements IEmpleadoDAO {
         empleado.setCorreo(rs.getString("correo"));
         empleado.setDireccion(rs.getString("direccion"));
         empleado.setNombreUsuario(rs.getString("usuario"));
-        empleado.setContrasena(rs.getString("contrasena"));
+        empleado.setContrasena(null);
         return empleado;
     }
 
