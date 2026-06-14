@@ -9,7 +9,10 @@ import java.sql.ResultSet;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+import Arboles.ArbolBusqueda;
 import modelo.Producto;
+import modelo.Proveedor;
 
 public class ProductoDAO implements IProductoDAO {
 
@@ -109,4 +112,6 @@ public class ProductoDAO implements IProductoDAO {
         conn.close();
         return p;
     }
+
+
 }

@@ -2,6 +2,8 @@
 package interfaz;
 
 import java.util.List;
+
+import Arboles.ArbolBusqueda;
 import modelo.Proveedor;
 
 public interface IProveedoresDAO {
@@ -12,7 +14,9 @@ public interface IProveedoresDAO {
 
     void eliminar(int idProveedor) throws Exception;
 
-    List<Proveedor> listar() throws Exception;
+    // List<Proveedor> listar() throws Exception;
 
     Proveedor buscar(int idProveedor) throws Exception;
+
+    public ArbolBusqueda<Proveedor> listar() throws Exception;
 }
