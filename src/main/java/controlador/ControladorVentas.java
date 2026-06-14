@@ -1,32 +1,25 @@
 
 package controlador;
 
-import com.ues.group.vista.VistaVentas;
-
 import Arboles.ArbolBusqueda;
+import com.ues.group.vista.VistaHistorialVentas;
+import com.ues.group.vista.VistaVentas;
 import dao.ClienteDAO;
 import dao.InventarioDAO;
 import dao.VentaDAO;
-import java.awt.Color;
-import java.awt.Component;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelo.Cliente;
 import modelo.DetalleVenta;
 import modelo.Inventario;
+import modelo.Producto;
 import modelo.Venta;
 
-/**
- *
- * @author natha
- */
 public class ControladorVentas {
 
     private static final int STOCK_BAJO = 5;
@@ -36,10 +29,6 @@ public class ControladorVentas {
     private final ClienteDAO clienteDAO;
     private final InventarioDAO inventarioDAO;
 
-    // Inventarios su stockDisponible se modifica localmente al armar la venta
-    private List<Inventario> inventariosCache = new ArrayList<>();
-
-    // detalles temp
     private final List<DetalleVenta> detallesTemp = new ArrayList<>();
 
     public ControladorVentas(VistaVentas vista) {
@@ -58,26 +47,59 @@ public class ControladorVentas {
 
         vista.txtSubtotal.setEditable(false);
         vista.txtTotal.setEditable(false);
-        vista.txtIdVenta.setEditable(false);
         vista.txtNombreCli.setEditable(false);
         vista.txtApellidoCli.setEditable(false);
 
+        limpiarLabelsProducto();
         cargarClientes();
         cargarProductos();
     }
 
     private void iniciarEventos() {
         vista.cmbCliente.addActionListener(e -> autocompletarCliente());
+        vista.cmbProducto.addActionListener(e -> actualizarLabelsProducto());
         vista.btnAgregar.addActionListener(e -> agregarDetalle());
         vista.btnQuitar.addActionListener(e -> quitarDetalle());
         vista.btnRegistrar.addActionListener(e -> registrarVenta());
         vista.btnCancelar.addActionListener(e -> cancelar());
         vista.btnBack.addActionListener(e -> volverMenu());
-        vista.btnImprimir
-                .addActionListener(e -> JOptionPane.showMessageDialog(vista, "Función de impresión en desarrollo."));
+        vista.btnHistorialVenta.addActionListener(e -> abrirHistorial());
     }
 
-    // cargar datos
+    private void actualizarLabelsProducto() {
+        String item = (String) vista.cmbProducto.getSelectedItem();
+        if (item == null || item.startsWith("--")) {
+            limpiarLabelsProducto();
+            return;
+        }
+        try {
+            int idInventario = Integer.parseInt(item.split(" - ")[0].trim());
+            Inventario inv = inventarioDAO.buscar(idInventario);
+
+            vista.lblPrecio.setText("Precio Unitario: $" + inv.getPrecioUnitario().setScale(2));
+
+            int stock = inv.getStockDisponible();
+            if (stock == 0) {
+                vista.lblStock.setText("Stock Disponible: AGOTADO");
+                vista.lblStock.setForeground(java.awt.Color.RED);
+            } else if (stock <= STOCK_BAJO) {
+                vista.lblStock.setText("Stock Disponible: " + stock + " (poco stock)");
+                vista.lblStock.setForeground(new java.awt.Color(200, 100, 0));
+            } else {
+                vista.lblStock.setText("Stock Disponible: " + stock);
+                vista.lblStock.setForeground(vista.lblPrecio.getForeground());
+            }
+        } catch (Exception e) {
+            limpiarLabelsProducto();
+        }
+    }
+
+    private void limpiarLabelsProducto() {
+        vista.lblPrecio.setText("Precio Unitario: -----------");
+        vista.lblStock.setText("Stock Disponible: -----------");
+        vista.lblStock.setForeground(vista.lblPrecio.getForeground());
+    }
+
     private void cargarClientes() {
         vista.cmbCliente.removeAllItems();
         vista.cmbCliente.addItem("-- Seleccione --");
@@ -91,7 +113,6 @@ public class ControladorVentas {
             JOptionPane.showMessageDialog(vista,
                     "Error al cargar clientes:\n" + e.getClass().getSimpleName() + ": " + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
         }
     }
 
@@ -99,57 +120,16 @@ public class ControladorVentas {
         vista.cmbProducto.removeAllItems();
         vista.cmbProducto.addItem("-- Seleccione --");
         try {
-            inventariosCache = inventarioDAO.listar();
-
-            for (Inventario inv : inventariosCache) {
-                String etiqueta = construirEtiquetaProducto(inv);
-                vista.cmbProducto.addItem(etiqueta);
+            List<Inventario> lista = inventarioDAO.listar();
+            for (Inventario inv : lista) {
+                vista.cmbProducto.addItem(inv.getIdInventario() + " - " + inv.getNombreProducto());
             }
-
-            // Renderer que colorea y deshabilita visualmente los agotados
-            vista.cmbProducto.setRenderer(new DefaultListCellRenderer() {
-                @Override
-                public Component getListCellRendererComponent(
-                        JList<?> list, Object value, int index,
-                        boolean isSelected, boolean cellHasFocus) {
-
-                    super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-                    // index 0 =Seleccione, índices 1..N corresponden a inventariosCache[index-1]
-                    if (index > 0 && index <= inventariosCache.size()) {
-                        Inventario inv = inventariosCache.get(index - 1);
-                        if (inv.getStockDisponible() == 0) {
-                            setForeground(Color.RED);
-                            setEnabled(false); // no clickeable
-                        } else if (inv.getStockDisponible() <= STOCK_BAJO) {
-                            setForeground(new Color(200, 100, 0)); // naranja oscuro
-                        } else {
-                            setForeground(isSelected ? list.getSelectionForeground() : list.getForeground());
-                        }
-                    }
-                    return this;
-                }
-            });
-
         } catch (Exception e) {
             JOptionPane.showMessageDialog(vista,
                     "Error al cargar productos:\n" + e.getClass().getSimpleName() + ": " + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
         }
-    }
-
-    // Etiqueta cbox
-    private String construirEtiquetaProducto(Inventario inv) {
-        String base = inv.getIdInventario() + " - " + inv.getNombreProducto()
-                + " ($" + inv.getPrecioUnitario() + ")";
-        if (inv.getStockDisponible() == 0) {
-            return base + "  [AGOTADO]";
-        } else if (inv.getStockDisponible() <= STOCK_BAJO) {
-            return base + "  [POCO STOCK: " + inv.getStockDisponible() + "]";
-        } else {
-            return base + "  [stock: " + inv.getStockDisponible() + "]";
-        }
+        limpiarLabelsProducto();
     }
 
     private void autocompletarCliente() {
@@ -174,8 +154,8 @@ public class ControladorVentas {
     }
 
     private void agregarDetalle() {
-        int indexCombo = vista.cmbProducto.getSelectedIndex();
-        if (indexCombo <= 0) {
+        String item = (String) vista.cmbProducto.getSelectedItem();
+        if (item == null || item.startsWith("--")) {
             JOptionPane.showMessageDialog(vista, "Seleccione un producto.",
                     "Campo requerido", JOptionPane.WARNING_MESSAGE);
             return;
@@ -192,9 +172,8 @@ public class ControladorVentas {
         try {
             cantidad = Integer.parseInt(cantStr);
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(vista,
-                    "Cantidad inválida. Ingrese un número entero.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(vista, "Cantidad inválida. Ingrese un número entero.",
+                    "Error de formato", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -204,68 +183,60 @@ public class ControladorVentas {
             return;
         }
 
-        // indexCombo - 1 porque posición 0 es seleccione
-        Inventario inv = inventariosCache.get(indexCombo - 1);
+        try {
+            int idInventario = Integer.parseInt(item.split(" - ")[0].trim());
+            Inventario inv = inventarioDAO.buscar(idInventario);
 
-        // Validar stock disponible
-        if (inv.getStockDisponible() == 0) {
+            if (inv.getStockDisponible() == 0) {
+                JOptionPane.showMessageDialog(vista,
+                        "El producto \"" + inv.getNombreProducto() + "\" está AGOTADO.",
+                        "Sin stock", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (cantidad > inv.getStockDisponible()) {
+                JOptionPane.showMessageDialog(vista,
+                        "Stock insuficiente para \"" + inv.getNombreProducto() + "\".\n"
+                                + "Stock disponible: " + inv.getStockDisponible() + "\n"
+                                + "Cantidad solicitada: " + cantidad,
+                        "Stock insuficiente", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            Producto p = new Producto();
+            p.setIdProducto(inv.getIdProducto());
+            p.setDescripcion(inv.getNombreProducto());
+
+            DetalleVenta d = new DetalleVenta();
+            d.setIdProducto(inv.getIdProducto());
+            d.setProducto(p);
+            d.setCantidad(cantidad);
+            d.setPrecioUnitario(inv.getPrecioUnitario());
+
+            detallesTemp.add(d);
+            actualizarLabelsProducto();
+            refrescarTablaDetalle();
+            actualizarTotales();
+
+            vista.cmbProducto.setSelectedIndex(0);
+            vista.txtCantidad.setText("");
+
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(vista,
-                    "El producto \"" + inv.getNombreProducto() + "\" está AGOTADO.",
-                    "Sin stock", JOptionPane.ERROR_MESSAGE);
-            return;
+                    "Error al agregar producto: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
         }
-        if (inv.getStockDisponible() < cantidad) {
-            JOptionPane.showMessageDialog(vista,
-                    "Stock insuficiente para \"" + inv.getNombreProducto() + "\".\n" +
-                            "Disponible: " + inv.getStockDisponible() + "  |  Solicitado: " + cantidad,
-                    "Stock insuficiente", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // detalle con subtotal calculado
-        DetalleVenta d = new DetalleVenta();
-        d.setIdProducto(inv.getIdProducto());
-        d.setCantidad(cantidad);
-        d.setPrecioUnitario(inv.getPrecioUnitario());
-
-        detallesTemp.add(d);
-
-        inv.setStockDisponible(inv.getStockDisponible() - cantidad);
-
-        // Actualizar combo nuevo stock
-        vista.cmbProducto.removeItemAt(indexCombo);
-        vista.cmbProducto.insertItemAt(construirEtiquetaProducto(inv), indexCombo);
-
-        refrescarTablaDetalle();
-        actualizarTotales();
-
-        vista.cmbProducto.setSelectedIndex(0);
-        vista.txtCantidad.setText("");
     }
 
     private void quitarDetalle() {
         int fila = vista.tblDetalleVenta.getSelectedRow();
         if (fila < 0) {
-            JOptionPane.showMessageDialog(vista,
-                    "Seleccione una fila de la tabla para quitar.",
+            JOptionPane.showMessageDialog(vista, "Seleccione una fila de la tabla para quitar.",
                     "Sin selección", JOptionPane.WARNING_MESSAGE);
             return;
         }
-
-        DetalleVenta d = detallesTemp.remove(fila);
-
-        // Devolver stock al cache buscando por idProducto
-        for (int i = 0; i < inventariosCache.size(); i++) {
-            if (inventariosCache.get(i).getIdProducto() == d.getIdProducto()) {
-                Inventario inv = inventariosCache.get(i);
-                inv.setStockDisponible(inv.getStockDisponible() + d.getCantidad());
-                // Actualizar etiqueta en combo (posición i+1 porque 0 es "-- Seleccione --")
-                vista.cmbProducto.removeItemAt(i + 1);
-                vista.cmbProducto.insertItemAt(construirEtiquetaProducto(inv), i + 1);
-                break;
-            }
-        }
-
+        detallesTemp.remove(fila);
+        actualizarLabelsProducto();
         refrescarTablaDetalle();
         actualizarTotales();
     }
@@ -276,6 +247,7 @@ public class ControladorVentas {
         for (DetalleVenta d : detallesTemp) {
             modelo.addRow(new Object[] {
                     d.getIdProducto(),
+                    d.getProducto() != null ? d.getProducto().getDescripcion() : "—",
                     d.getCantidad(),
                     d.getPrecioUnitario(),
                     d.getSubtotal()
@@ -293,14 +265,16 @@ public class ControladorVentas {
     }
 
     private void registrarVenta() {
-        if (!validarFormulario())
+        if (!validarFormulario()) {
             return;
+        }
 
         int confirm = JOptionPane.showConfirmDialog(vista,
                 "¿Confirmar el registro de esta venta?",
                 "Confirmar venta", JOptionPane.YES_NO_OPTION);
-        if (confirm != JOptionPane.YES_OPTION)
+        if (confirm != JOptionPane.YES_OPTION) {
             return;
+        }
 
         try {
             String selCliente = (String) vista.cmbCliente.getSelectedItem();
@@ -321,13 +295,12 @@ public class ControladorVentas {
                     "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
             limpiarFormulario();
-            cargarProductos(); // recargar stock real desde BD
+            cargarProductos();
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(vista,
                     "Error al registrar la venta:\n" + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
         }
     }
 
@@ -354,7 +327,7 @@ public class ControladorVentas {
 
     private void cancelar() {
         limpiarFormulario();
-        cargarProductos(); // restaurar stock real desde BD al cancelar
+        cargarProductos();
     }
 
     private void limpiarFormulario() {
@@ -369,9 +342,16 @@ public class ControladorVentas {
         vista.txtTotal.setText("");
         vista.txtFecha.setText(LocalDate.now().toString());
         vista.txtHora.setText(LocalTime.now().withNano(0).toString());
+        limpiarLabelsProducto();
     }
 
     private void volverMenu() {
         vista.dispose();
+    }
+
+    private void abrirHistorial() {
+        VistaHistorialVentas vistaHistorial = new VistaHistorialVentas();
+        new ControladorHistorialVentas(vistaHistorial);
+        vistaHistorial.setVisible(true);
     }
 }
