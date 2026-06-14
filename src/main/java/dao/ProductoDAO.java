@@ -1,5 +1,6 @@
 package dao;
 
+import Arboles.ArbolAVL;
 import conexion.Conexion;
 import interfaz.IProductoDAO;
 
@@ -89,7 +90,7 @@ public class ProductoDAO implements IProductoDAO {
             p.setTipo(rs.getString("tipo"));
             p.setPrecio(rs.getBigDecimal("precio"));
             p.setStock(rs.getInt("stock"));
-            arbol.insertar(p); // se ordena automáticamente por compareTo (descripcion)
+            arbol.insertar(p);
         }
         conn.close();
         return arbol;

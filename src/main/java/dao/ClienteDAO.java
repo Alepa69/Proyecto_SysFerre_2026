@@ -1,9 +1,9 @@
 
 package dao;
 
+import Arboles.ArbolBusqueda;
 import conexion.Conexion;
 import interfaz.IClienteDAO;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,8 +11,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
-import Arboles.ArbolBusqueda;
 import modelo.Cliente;
 
 /**
@@ -92,7 +90,7 @@ public class ClienteDAO implements IClienteDAO {
             c.setIdCliente(rs.getInt("id_cliente"));
             c.setNombre(rs.getString("nombre"));
             c.setApellido(rs.getString("apellido"));
-            arbol.insertar(c); // se inserta ordenado por nombre (compareTo)
+            arbol.insertar(c);   // se inserta ordenado por nombre (compareTo)
         }
         conn.close();
         return arbol;

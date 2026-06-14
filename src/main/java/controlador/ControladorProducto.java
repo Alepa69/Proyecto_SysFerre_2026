@@ -1,5 +1,6 @@
 package controlador;
 
+import Arboles.ArbolAVL;
 import com.ues.group.vista.VistaProductos;
 import dao.ProductoDAO;
 import modelo.Producto;
@@ -7,8 +8,10 @@ import Arboles.ArbolBusqueda;
 
 import javax.swing.table.DefaultTableModel;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
+
 
 public class ControladorProducto {
 
@@ -201,7 +204,13 @@ public class ControladorProducto {
             JOptionPane.showMessageDialog(vista, "Error al cargar tabla: " + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
+        
+        poblarTabla(lista); // IND() = inorden = ordenado por descripción
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(vista, "Error al cargar tabla: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
     }
+}
 
     private void poblarTabla(List<Producto> lista) {
         DefaultTableModel modelo = (DefaultTableModel) vista.tblProductos.getModel();

@@ -53,11 +53,12 @@ public class ControladorReabastecimiento {
             vista.getCmbProveedor().removeAllItems();
             vista.getCmbProducto().removeAllItems();
 
-            for (Proveedor p: dao.listarProveedores()) {
+            for (Proveedor p : dao.listarProveedores()) {
                 vista.getCmbProveedor().addItem(p);
             }
 
-            for (Producto p: productoDAO.listar().IND()) {
+            for (Object obj : productoDAO.listar().IND()) {
+                Producto p = (Producto) obj;
                 vista.getCmbProducto().addItem(p);
             }
         } catch (Exception e) {
@@ -73,20 +74,11 @@ public class ControladorReabastecimiento {
         try {
             Producto producto = (Producto) vista.getCmbProducto().getSelectedItem();
             Proveedor proveedor = (Proveedor) vista.getCmbProveedor().getSelectedItem();
-
             int cantidad = Integer.parseInt(vista.getTxtCantidad().getText().trim());
             double precio = producto.getPrecio().doubleValue();
             double subtotal = cantidad * precio;
 
-            getModeloTabla().addRow(new Object[] {
-                    producto.getIdProducto(),
-                    producto.getDescripcion(),
-                    cantidad,
-                    precio,
-                    proveedor,
-                    subtotal
-            });
-
+            getModeloTabla().addRow(new Object[] {producto.getIdProducto(), producto.getDescripcion(),cantidad, precio,proveedor,subtotal});
             actualizarTotal();
         } catch (Exception e) {
             mostrarMensaje("No se pudo agregar al carrito: " + e.getMessage());
@@ -94,9 +86,9 @@ public class ControladorReabastecimiento {
     }
 
     private void actualizarTotal() {
-
+        total = 0;
         DefaultTableModel modelo = getModeloTabla();
-        for (int i = 0; i < modelo.getRowCount(); i++) {
+        for(int i = 0; i < modelo.getRowCount(); i++) {
             total += Double.parseDouble(modelo.getValueAt(i, 5).toString());
         }
         vista.getTxtTotal().setText(String.valueOf(total));
@@ -106,26 +98,19 @@ public class ControladorReabastecimiento {
     private void registrar() {
         DefaultTableModel modelo = getModeloTabla();
 
-        if (modelo.getRowCount() == 0) {
+        if(modelo.getRowCount() == 0) {
             mostrarMensaje("Agregue al menos un producto al carrito");
             return;
         }
 
-        /*
-         * String totalStr = vista.getTxtTotal().getText().trim();
-         * if (totalStr.isEmpty()) {
-         * return;
-         * }
-         */
-
-        try {
+        try{
             CompraProveedor compra = new CompraProveedor();
             compra.setFecha(LocalDate.now());
             compra.setCategoria("123");
             compra.setTotalCompra(total);
             compra.setDetalles(new ArrayList<>());
 
-            for (int i = 0; i < modelo.getRowCount(); i++) {
+            for(int i = 0; i < modelo.getRowCount(); i++) {
                 DetalleCompra detalle = new DetalleCompra();
                 detalle.setIdProducto(Integer.parseInt(modelo.getValueAt(i, 0).toString()));
                 detalle.setCantidad(Integer.parseInt(modelo.getValueAt(i, 2).toString()));
@@ -140,16 +125,17 @@ public class ControladorReabastecimiento {
             mostrarMensaje("datos de pedido guardados");
             limpiar();
 
-        } catch (Exception e) {
+        }catch(Exception e) {
             mostrarMensaje("error al registrar:" + e.getMessage());
         }
     }
 
     private void limpiar() {
+        total = 0;
         vista.getTxtCantidad().setText("");
         vista.getTxtTotal().setText("");
         vista.getCmbProveedor().setSelectedIndex(0);
-        if (vista.getCmbProducto().getItemCount() > 0) {
+        if(vista.getCmbProducto().getItemCount() > 0) {
             vista.getCmbProducto().setSelectedIndex(0);
         }
         getModeloTabla().setRowCount(0);
@@ -158,18 +144,18 @@ public class ControladorReabastecimiento {
     private boolean validarCamposDetalle() {
         String cantStr = vista.getTxtCantidad().getText().trim();
 
-        if (cantStr.isEmpty()) {
+        if(cantStr.isEmpty()) {
             mostrarMensaje("Ingrese la cantidad a comprar");
             return false;
         }
 
-        try {
-            if (Integer.parseInt(cantStr) <= 0) {
+        try{
+            if(Integer.parseInt(cantStr) <= 0) {
                 mostrarMensaje("La cantidad debe ser mayor a 0");
                 return false;
             }
             return true;
-        } catch (NumberFormatException e) {
+        }catch(NumberFormatException e) {
             mostrarMensaje("Ingrese numeros");
             return false;
         }
