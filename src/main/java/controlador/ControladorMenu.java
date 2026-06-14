@@ -18,6 +18,7 @@ import com.ues.group.vista.VistaVentas;
  * @author alexi
  */
 public class ControladorMenu {
+
     private VistaMenuPrincipal vista;
 
     public ControladorMenu() {
@@ -55,7 +56,7 @@ public class ControladorMenu {
 
     private void llamarEmpleados() {
         VistaEmpleados ve = new VistaEmpleados();
-        // new ControladorEmpleados(ve);
+        new ControladorEmpleado(ve);
         ve.setVisible(true);
         // vista.dispose();
     }
