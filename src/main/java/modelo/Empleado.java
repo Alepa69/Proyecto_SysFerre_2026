@@ -1,13 +1,5 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package modelo;
 
-/**
- *
- * @author natha
- */
 public class Empleado implements Comparable<Empleado> {
 
     private int idEmpleado;
@@ -16,19 +8,26 @@ public class Empleado implements Comparable<Empleado> {
     private String telefono;
     private String correo;
     private String direccion;
-    private Usuario usuario; // usuario asociado (opcional, para mostrar en tabla)
+    private String nombreUsuario;
+    private String contrasena;
+    private Usuario usuario;
 
     public Empleado() {
     }
 
-    public Empleado(int idEmpleado, String nombre, String apellido,
-            String telefono, String correo, String direccion) {
+    public Empleado(int idEmpleado, String nombre, String apellido, String telefono, String correo, String direccion) {
         this.idEmpleado = idEmpleado;
         this.nombre = nombre;
         this.apellido = apellido;
         this.telefono = telefono;
         this.correo = correo;
         this.direccion = direccion;
+    }
+
+    public Empleado(int idEmpleado, String nombre, String apellido, String telefono, String correo, String direccion, String nombreUsuario, String contrasena) {
+        this(idEmpleado, nombre, apellido, telefono, correo, direccion);
+        this.nombreUsuario = nombreUsuario;
+        this.contrasena = contrasena;
     }
 
     public int getIdEmpleado() {
@@ -79,24 +78,29 @@ public class Empleado implements Comparable<Empleado> {
         this.direccion = direccion;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
+    public String getNombreUsuario() {
+        return nombreUsuario;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
     }
-    
+
+    public String getContrasena() {
+        return contrasena;
+    }
+
+    public void setContrasena(String contrasena) {
+        this.contrasena = contrasena;
+    }
 
     @Override
     public String toString() {
         return nombre + " " + apellido;
     }
 
-        @Override
-    public int compareTo(Empleado o) {
-        Empleado actual = this;
-        return actual.getApellido().compareTo(o.getApellido());
+    @Override
+    public int compareTo(Empleado otro) {
+        return Integer.compare(this.idEmpleado, otro.idEmpleado);
     }
-
 }
