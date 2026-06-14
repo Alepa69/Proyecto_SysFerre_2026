@@ -4,6 +4,9 @@
  */
 package modelo;
 
+import utileria.Encriptar;
+
+
 /**
  *
  * @author natha
@@ -71,22 +74,27 @@ public class Usuario implements Comparable<Usuario> {
         return nombreUsuario;
     }
 
+    /**
+     * Valida las credenciales contra la BD comparando el hash SHA-256
+     * generado con la utilería Encriptar.
+     */
     public boolean validarCredenciales(String usuario, String contrasena) {
         String sql = "SELECT contrasena FROM usuarios WHERE usuario = ?";
         try (java.sql.Connection conn = conexion.Conexion.getConexion();
-             java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+                java.sql.PreparedStatement ps = conn.prepareStatement(sql)) {
+
             ps.setString(1, usuario);
+
             try (java.sql.ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) return false; // usuario no existe
+                if (!rs.next()) {
+                    return false; // usuario no existe
+                }
 
                 String hashGuardado = rs.getString("contrasena");
+                String hashIngresado = Encriptar.getStringMessageDialog(
+                        contrasena, Encriptar.SHA256);
 
-                if (hashGuardado.startsWith("$2b$") || hashGuardado.startsWith("$2a$")) {
-                    String hashNormalizado = hashGuardado.replace("$2b$", "$2a$");
-                    return org.mindrot.jbcrypt.BCrypt.checkpw(contrasena, hashNormalizado);
-                } else {
-                    return hashGuardado.equals(contrasena);
-                }
+                return hashGuardado != null && hashGuardado.equals(hashIngresado);
             }
         } catch (Exception e) {
             System.err.println("Error al validar credenciales: " + e.getMessage());
@@ -94,7 +102,7 @@ public class Usuario implements Comparable<Usuario> {
         }
     }
 
-        @Override
+    @Override
     public int compareTo(Usuario o) {
         Usuario actual = this;
         return actual.getNombreUsuario().compareTo(o.getNombreUsuario());

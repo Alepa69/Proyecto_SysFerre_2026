@@ -1,7 +1,8 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.ues.group.vista.util;
+package utileria;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -14,12 +15,10 @@ import javax.swing.JPanel;
 import javax.swing.border.TitledBorder;
 
 /**
- * 
  *
- * @author mendo
+ * @author PC
  */
 public class TemaPurpura {
-
     // Paleta de colores Anaranjado y Negro
     public static final Color FONDO_PRINCIPAL = new Color(255, 243, 224); // Naranja muy pálido/Crema
     public static final Color FONDO_PANEL    = new Color(255, 224, 178); // Naranja claro

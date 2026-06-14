@@ -3,8 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package com.ues.group.vista;
+import utileria.TemaPurpura;
 
-import com.ues.group.vista.util.TemaPurpura;
 
 /**
  *
