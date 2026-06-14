@@ -3,6 +3,8 @@ package controlador;
 import com.ues.group.vista.VistaProductos;
 import dao.ProductoDAO;
 import modelo.Producto;
+import Arboles.ArbolBusqueda;
+
 import javax.swing.table.DefaultTableModel;
 import java.math.BigDecimal;
 import java.util.List;
@@ -12,12 +14,13 @@ public class ControladorProducto {
 
     private final VistaProductos vista;
     private final ProductoDAO dao;
+    private ArbolBusqueda<Producto> arbolBase; // árbol principal, espejo de la BD
 
     public ControladorProducto(VistaProductos vista) {
         this.vista = vista;
         this.dao = new ProductoDAO();
         iniciarEventos();
-        cargarTabla();
+        cargarTabla(); // carga y ordena por descripción automáticamente via IND()
     }
 
     private void iniciarEventos() {
@@ -39,56 +42,93 @@ public class ControladorProducto {
 
     private void nuevo() {
         limpiar();
-        vista.txtPrecio.requestFocus();
+        vista.txtDescripcion.requestFocus();
     }
 
     private void backMenu() {
         vista.dispose();
     }
 
+    // ─── BÚSQUEDA CON ÁRBOL ───────────────────────────────────────────────────
+    // Construimos un árbol auxiliar de IDs enteros para aprovechar buscar() O(log
+    // n)
+    // Luego recuperamos el Producto completo desde la lista del árbol base
     private void buscar() {
-        String idTexto = vista.txtId.getText().trim();
-        if (idTexto.isEmpty()) {
+        String texto = vista.txtId.getText().trim();
+        if (texto.isEmpty()) {
             JOptionPane.showMessageDialog(vista, "Ingrese un ID para buscar.",
                     "Campo vacío", JOptionPane.WARNING_MESSAGE);
             return;
         }
+
+        int idBuscado;
         try {
-            int id = Integer.parseInt(idTexto);
-            Producto p = dao.buscar(id);
-            if (p != null) {
-                vista.txtPrecio.setText(p.getPrecio().toString());
-                vista.cmbTipo.setSelectedItem(p.getTipo());
-                vista.txtStock.setText(String.valueOf(p.getStock()));
-                vista.txtDescripcion.setText(p.getDescripcion());
-            } else {
-                JOptionPane.showMessageDialog(vista, "No se encontró un producto con ese ID.",
-                        "Sin resultados", JOptionPane.INFORMATION_MESSAGE);
-            }
+            idBuscado = Integer.parseInt(texto);
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(vista, "El ID debe ser un número entero.",
                     "Formato inválido", JOptionPane.WARNING_MESSAGE);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(vista, "Error al buscar: " + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (arbolBase == null || arbolBase.isEmpty()) {
+            JOptionPane.showMessageDialog(vista, "No hay productos cargados.",
+                    "Sin datos", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        // Árbol auxiliar de IDs para la búsqueda binaria
+        List<Producto> listaActual = arbolBase.IND();
+        ArbolBusqueda<Integer> arbolIds = new ArbolBusqueda<>();
+        for (Producto p : listaActual) {
+            arbolIds.insertar(p.getIdProducto());
+        }
+
+        if (arbolIds.buscar(idBuscado) == null) {
+            JOptionPane.showMessageDialog(vista,
+                    "No se encontró producto con ID " + idBuscado + ".",
+                    "Sin resultados", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+
+        // Recuperamos el objeto Producto completo
+        Producto resultado = listaActual.stream()
+                .filter(p -> p.getIdProducto() == idBuscado)
+                .findFirst()
+                .orElse(null);
+
+        if (resultado != null) {
+            // Muestra solo ese producto en la tabla
+            DefaultTableModel modelo = (DefaultTableModel) vista.tblProductos.getModel();
+            modelo.setRowCount(0);
+            modelo.addRow(new Object[] {
+                    resultado.getIdProducto(),
+                    resultado.getPrecio(),
+                    resultado.getTipo(),
+                    resultado.getStock(),
+                    resultado.getDescripcion()
+            });
+            // Llena el formulario con sus datos
+            vista.txtId.setText(String.valueOf(resultado.getIdProducto()));
+            vista.txtPrecio.setText(resultado.getPrecio().toString());
+            vista.cmbTipo.setSelectedItem(resultado.getTipo());
+            vista.txtStock.setText(String.valueOf(resultado.getStock()));
+            vista.txtDescripcion.setText(resultado.getDescripcion());
         }
     }
 
+    // ─── CRUD ─────────────────────────────────────────────────────────────────
     private void guardar() {
         if (!validarCampos())
             return;
         try {
-            Producto p = new Producto();
-            p.setPrecio(new BigDecimal(vista.txtPrecio.getText().trim()));
-            p.setDescripcion(vista.txtDescripcion.getText().trim());
-            p.setTipo(vista.cmbTipo.getSelectedItem().toString());
-            p.setStock(Integer.parseInt(vista.txtStock.getText().trim()));
+            Producto p = construirDesdeVista();
             dao.insertar(p);
             JOptionPane.showMessageDialog(vista, "Producto guardado correctamente.");
             limpiar();
             cargarTabla();
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(vista, "Precio y Stock deben ser valores numéricos válidos.",
+            JOptionPane.showMessageDialog(vista,
+                    "Precio y Stock deben ser valores numéricos válidos.",
                     "Error de formato", JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(vista, "Error al guardar: " + e.getMessage(),
@@ -104,18 +144,15 @@ public class ControladorProducto {
         if (!validarCampos())
             return;
         try {
-            Producto p = new Producto();
+            Producto p = construirDesdeVista();
             p.setIdProducto(Integer.parseInt(vista.txtId.getText()));
-            p.setPrecio(new BigDecimal(vista.txtPrecio.getText().trim()));
-            p.setDescripcion(vista.txtDescripcion.getText().trim());
-            p.setTipo(vista.cmbTipo.getSelectedItem().toString());
-            p.setStock(Integer.parseInt(vista.txtStock.getText().trim()));
             dao.actualizar(p);
             JOptionPane.showMessageDialog(vista, "Producto modificado correctamente.");
             limpiar();
             cargarTabla();
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(vista, "Precio y Stock deben ser valores numéricos válidos.",
+            JOptionPane.showMessageDialog(vista,
+                    "Precio y Stock deben ser valores numéricos válidos.",
                     "Error de formato", JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(vista, "Error al modificar: " + e.getMessage(),
@@ -151,25 +188,33 @@ public class ControladorProducto {
         vista.txtStock.setText("");
         vista.cmbTipo.setSelectedIndex(0);
         vista.tblProductos.clearSelection();
+        // Restaura la tabla completa ordenada por descripción
+        if (arbolBase != null) {
+            poblarTabla(arbolBase.IND());
+        }
     }
 
     private void cargarTabla() {
-        DefaultTableModel modelo = (DefaultTableModel) vista.tblProductos.getModel();
-        modelo.setRowCount(0);
         try {
-            List<Producto> lista = dao.listar();
-            for (Producto p : lista) {
-                modelo.addRow(new Object[] {
-                        p.getIdProducto(),
-                        p.getPrecio(),
-                        p.getTipo(),
-                        p.getStock(),
-                        p.getDescripcion()
-                });
-            }
+            arbolBase = dao.listar(); // construye el árbol desde BD
+            poblarTabla(arbolBase.IND()); // IND() = inorden = ordenado por descripción
         } catch (Exception e) {
             JOptionPane.showMessageDialog(vista, "Error al cargar tabla: " + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void poblarTabla(List<Producto> lista) {
+        DefaultTableModel modelo = (DefaultTableModel) vista.tblProductos.getModel();
+        modelo.setRowCount(0);
+        for (Producto p : lista) {
+            modelo.addRow(new Object[] {
+                    p.getIdProducto(),
+                    p.getPrecio(),
+                    p.getTipo(),
+                    p.getStock(),
+                    p.getDescripcion()
+            });
         }
     }
 
@@ -185,25 +230,37 @@ public class ControladorProducto {
         }
     }
 
+    private Producto construirDesdeVista() {
+        Producto p = new Producto();
+        p.setPrecio(new BigDecimal(vista.txtPrecio.getText().trim()));
+        p.setDescripcion(vista.txtDescripcion.getText().trim());
+        p.setTipo(vista.cmbTipo.getSelectedItem().toString());
+        p.setStock(Integer.parseInt(vista.txtStock.getText().trim()));
+        return p;
+    }
+
     private boolean validarCampos() {
         if (vista.txtPrecio.getText().trim().isEmpty()
                 || vista.txtDescripcion.getText().trim().isEmpty()
                 || vista.txtStock.getText().trim().isEmpty()) {
-            JOptionPane.showMessageDialog(vista, "Precio, Descripción y Stock son obligatorios.",
+            JOptionPane.showMessageDialog(vista,
+                    "Precio, Descripción y Stock son obligatorios.",
                     "Campos vacíos", JOptionPane.WARNING_MESSAGE);
             return false;
         }
         try {
             new BigDecimal(vista.txtPrecio.getText().trim());
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(vista, "El Precio debe ser un número válido (ej: 9.99).",
+            JOptionPane.showMessageDialog(vista,
+                    "El Precio debe ser un número válido (ej: 9.99).",
                     "Formato inválido", JOptionPane.WARNING_MESSAGE);
             return false;
         }
         try {
             Integer.parseInt(vista.txtStock.getText().trim());
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(vista, "El Stock debe ser un número entero válido.",
+            JOptionPane.showMessageDialog(vista,
+                    "El Stock debe ser un número entero válido.",
                     "Formato inválido", JOptionPane.WARNING_MESSAGE);
             return false;
         }
