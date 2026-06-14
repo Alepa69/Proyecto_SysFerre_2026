@@ -17,12 +17,14 @@ public class ControladorProducto {
 
     private final VistaProductos vista;
     private final ProductoDAO dao;
-    private ArbolAVL<Producto> arbolBase;           
+    private ArbolBusqueda<Producto> arbolBase;
+    // arbol principal refleja datos de la bd
+
     public ControladorProducto(VistaProductos vista) {
         this.vista = vista;
         this.dao = new ProductoDAO();
         iniciarEventos();
-        cargarTabla(); // carga y ordena por descripción automáticamente via IND()
+        cargarTabla();
     }
 
     private void iniciarEventos() {
@@ -51,10 +53,7 @@ public class ControladorProducto {
         vista.dispose();
     }
 
-    // ─── BÚSQUEDA CON ÁRBOL ───────────────────────────────────────────────────
-    // Construimos un árbol auxiliar de IDs enteros para aprovechar buscar() O(log
-    // n)
-    // Luego recuperamos el Producto completo desde la lista del árbol base
+    // implementacion busqueda con arbol
     private void buscar() {
         String texto = vista.txtId.getText().trim();
         if (texto.isEmpty()) {
@@ -78,8 +77,10 @@ public class ControladorProducto {
             return;
         }
 
-        // Árbol auxiliar de IDs para la búsqueda binaria
+        // liista ordenada del arbol principal en inorden
         List<Producto> listaActual = arbolBase.IND();
+
+        // arbol auxiliar solo con los id para facilitar la buusqueda
         ArbolBusqueda<Integer> arbolIds = new ArbolBusqueda<>();
         for (Producto p : listaActual) {
             arbolIds.insertar(p.getIdProducto());
@@ -92,14 +93,14 @@ public class ControladorProducto {
             return;
         }
 
-        // Recuperamos el objeto Producto completo
+        // si existe recupera el producto completo
         Producto resultado = listaActual.stream()
                 .filter(p -> p.getIdProducto() == idBuscado)
                 .findFirst()
                 .orElse(null);
 
         if (resultado != null) {
-            // Muestra solo ese producto en la tabla
+            // muestra solo ese producto en la tabla
             DefaultTableModel modelo = (DefaultTableModel) vista.tblProductos.getModel();
             modelo.setRowCount(0);
             modelo.addRow(new Object[] {
@@ -109,7 +110,6 @@ public class ControladorProducto {
                     resultado.getStock(),
                     resultado.getDescripcion()
             });
-            // Llena el formulario con sus datos
             vista.txtId.setText(String.valueOf(resultado.getIdProducto()));
             vista.txtPrecio.setText(resultado.getPrecio().toString());
             vista.cmbTipo.setSelectedItem(resultado.getTipo());
@@ -118,7 +118,7 @@ public class ControladorProducto {
         }
     }
 
-    // ─── CRUD ─────────────────────────────────────────────────────────────────
+    // crud
     private void guardar() {
         if (!validarCampos())
             return;
@@ -190,19 +190,19 @@ public class ControladorProducto {
         vista.txtStock.setText("");
         vista.cmbTipo.setSelectedIndex(0);
         vista.tblProductos.clearSelection();
-        // Restaura la tabla completa ordenada por descripción
+        // restaura la tabla ccon la busqueda por deescripcion
         if (arbolBase != null) {
             poblarTabla(arbolBase.IND());
         }
     }
 
     private void cargarTabla() {
-    try {
-        arbolBase = dao.listar(); // construye el árbol desde BD
-        
-        ArrayList<Producto> lista = new ArrayList<>();
-        for (Object obj : arbolBase.IND()) {
-            lista.add((Producto) obj);
+        try {
+            arbolBase = dao.listar();// retornamos un arbolBusqueda con productos ya insertados
+            poblarTabla(arbolBase.IND()); // IND = inorden = ordenado por descripción
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(vista, "Error al cargar tabla: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
         }
         
         poblarTabla(lista); // IND() = inorden = ordenado por descripción

@@ -18,7 +18,7 @@ import javax.swing.border.TitledBorder;
  *
  * @author PC
  */
-public class TemaPurpura {
+public class TemaAnaranjado {
     // Paleta de colores Anaranjado y Negro
     public static final Color FONDO_PRINCIPAL = new Color(255, 243, 224); // Naranja muy pálido/Crema
     public static final Color FONDO_PANEL    = new Color(255, 224, 178); // Naranja claro

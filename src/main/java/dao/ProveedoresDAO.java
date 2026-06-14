@@ -76,8 +76,8 @@ public class ProveedoresDAO implements IProveedoresDAO {
             conn.close();
         }
     }
-
-    // MODIFICACIÓN: Retornamos ArbolBusqueda e insertamos los nodos
+    
+    //retornamos arbol
     public ArbolBusqueda<Proveedor> listar() throws Exception {
         ArbolBusqueda<Proveedor> lista = new ArbolBusqueda<>();
         Connection conn = Conexion.getConexion();
@@ -91,7 +91,7 @@ public class ProveedoresDAO implements IProveedoresDAO {
             c.setTelefonos(rs.getString("telefono"));
             c.setCorreo(rs.getString("correo"));
             c.setDireccion(rs.getString("direccion"));
-            lista.insertar(c); // Se inserta ordenándose por nombre (según tu compareTo)
+            lista.insertar(c); // Se inserta ordenándose por nombre (según  compareTo)
 
         }
         conn.close();

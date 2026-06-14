@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import utileria.TemaAnaranjado;
 
 /**
  *
@@ -25,6 +26,7 @@ public class VistaClientes extends javax.swing.JFrame {
      */
     public VistaClientes() {
         initComponents();
+        TemaAnaranjado.aplicar(this);
         this.setLocationRelativeTo(null);
 
     }

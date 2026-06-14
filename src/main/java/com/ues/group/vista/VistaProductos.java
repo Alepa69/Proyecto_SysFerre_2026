@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package com.ues.group.vista;
-import utileria.TemaPurpura;
+import utileria.TemaAnaranjado;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -21,7 +21,7 @@ public class VistaProductos extends javax.swing.JFrame {
      */
     public VistaProductos() {
         initComponents();
-        TemaPurpura.aplicar(this);
+        TemaAnaranjado.aplicar(this);
         txtId.putClientProperty("JTextField.placeholderText", "Buscar por ID del producto...");
         this.setLocationRelativeTo(null);
 
