@@ -89,7 +89,7 @@ public class DetalleCompra implements Comparable<DetalleCompra> {
         return "Detalle #" + idDetalle + " - Cant: " + cantidad;
     }
 
-        @Override
+    @Override
     public int compareTo(DetalleCompra o) {
         DetalleCompra actual = this;
         return Integer.compare(actual.getIdDetalle(), o.getIdDetalle());

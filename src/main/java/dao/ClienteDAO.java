@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package dao;
 
 import conexion.Conexion;
@@ -14,6 +11,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+import Arboles.ArbolBusqueda;
 import modelo.Cliente;
 
 /**
@@ -28,6 +27,7 @@ public class ClienteDAO implements IClienteDAO {
     private static final String UPDATE = "UPDATE cliente SET nombre = ?, apellido = ? WHERE id_cliente = ?";
     private static final String DELETE = "DELETE FROM cliente WHERE id_cliente = ?";
 
+    @Override
     public void insertar(Cliente c) throws Exception {
         Connection conn = Conexion.getConexion();
         try {
@@ -45,6 +45,7 @@ public class ClienteDAO implements IClienteDAO {
         }
     }
 
+    @Override
     public void actualizar(Cliente c) throws Exception {
         Connection conn = Conexion.getConexion();
         try {
@@ -63,6 +64,7 @@ public class ClienteDAO implements IClienteDAO {
         }
     }
 
+    @Override
     public void eliminar(int idCliente) throws Exception {
         Connection conn = Conexion.getConexion();
         try {
@@ -79,8 +81,9 @@ public class ClienteDAO implements IClienteDAO {
         }
     }
 
-    public List<Cliente> listar() throws Exception {
-        List<Cliente> lista = new ArrayList<>();
+    @Override
+    public ArbolBusqueda<Cliente> listar() throws Exception {
+        ArbolBusqueda<Cliente> arbol = new ArbolBusqueda<>();
         Connection conn = Conexion.getConexion();
         PreparedStatement ps = conn.prepareStatement(SELECT_ALL);
         ResultSet rs = ps.executeQuery();
@@ -89,12 +92,13 @@ public class ClienteDAO implements IClienteDAO {
             c.setIdCliente(rs.getInt("id_cliente"));
             c.setNombre(rs.getString("nombre"));
             c.setApellido(rs.getString("apellido"));
-            lista.add(c);
+            arbol.insertar(c); // se inserta ordenado por nombre (compareTo)
         }
         conn.close();
-        return lista;
+        return arbol;
     }
 
+    @Override
     public Cliente buscar(int idCliente) throws Exception {
         Connection conn = Conexion.getConexion();
         PreparedStatement ps = conn.prepareStatement(SELECT_ID);
