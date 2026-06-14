@@ -8,7 +8,7 @@ package modelo;
  *
  * @author natha
  */
-public class Empleado {
+public class Empleado implements Comparable<Empleado> {
 
     private int idEmpleado;
     private String nombre;
@@ -16,6 +16,7 @@ public class Empleado {
     private String telefono;
     private String correo;
     private String direccion;
+    private Usuario usuario; // usuario asociado (opcional, para mostrar en tabla)
 
     public Empleado() {
     }
@@ -78,8 +79,24 @@ public class Empleado {
         this.direccion = direccion;
     }
 
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+    
+
     @Override
     public String toString() {
         return nombre + " " + apellido;
     }
+
+        @Override
+    public int compareTo(Empleado o) {
+        Empleado actual = this;
+        return actual.getApellido().compareTo(o.getApellido());
+    }
+
 }

@@ -10,7 +10,7 @@ import java.math.BigDecimal;
  *
  * @author natha
  */
-public class Inventario {
+public class Inventario implements Comparable<Inventario> {
 
     private int idInventario;
     private String nombreProducto;
@@ -92,5 +92,11 @@ public class Inventario {
     @Override
     public String toString() {
         return nombreProducto;
+    }
+
+    @Override
+    public int compareTo(Inventario o) {
+        Inventario actual = this;
+        return actual.getNombreProducto().compareTo(o.getNombreProducto());
     }
 }
