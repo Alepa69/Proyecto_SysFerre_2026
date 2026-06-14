@@ -1,7 +1,7 @@
 package controlador;
 
 import com.ues.group.vista.VistaProveedores;
-import Arboles.ArbolBusqueda; // Usamos únicamente tu árbol de búsqueda
+import Arboles.ArbolBusqueda; 
 import dao.ProveedoresDAO;
 import modelo.Proveedor;
 
@@ -88,7 +88,6 @@ public class ControladorProveedores {
             arbol.insertar(p.getIdProveedor());
         }
 
-        // SOLUCIÓN: Quitamos la variable 'Integer encontrado' y evaluamos directo
         if (arbol.buscar(idBuscado) == null) {
             JOptionPane.showMessageDialog(vista, "No se encontró proveedor con ID " +
                     idBuscado + ".",
@@ -121,7 +120,7 @@ public class ControladorProveedores {
         }
     }
 
-    // ─── ORDENAMIENTO CON ÁRBOL DE BÚSQUEDA ──────────────────────────────────
+    // ordenamos con arbol de busqueda
     private void ordenar() {
         if (arbolBase == null || arbolBase.isEmpty()) {
             JOptionPane.showMessageDialog(vista, "No hay proveedores para ordenar.",
@@ -151,14 +150,13 @@ public class ControladorProveedores {
 
     @SuppressWarnings("unchecked")
     private List<Proveedor> ordenarPorId() {
-        // CORRECCIÓN: Cambiado a ArbolBusqueda
         ArbolBusqueda<Integer> arbol = new ArbolBusqueda<>();
         List<Proveedor> listaActual = arbolBase.IND();
         for (Proveedor p : listaActual) {
             arbol.insertar(p.getIdProveedor());
         }
 
-        // CORRECCIÓN: Usamos .IND() directo del árbol para simplificar
+        // ind para simplificar
         List<Integer> idsOrdenados = arbol.IND();
 
         List<Proveedor> copiaActual = new ArrayList<>(listaActual);
@@ -180,7 +178,7 @@ public class ControladorProveedores {
     private List<Proveedor> ordenarPorNombre() {
         List<Proveedor> listaActual = arbolBase.IND();
 
-        // CORRECCIÓN: Cambiado a ArbolBusqueda y uso de .IND()
+    
         ArbolBusqueda<String> arbol = new ArbolBusqueda<>();
         for (Proveedor p : listaActual) {
             arbol.insertar(p.getNombre().toLowerCase());
@@ -205,7 +203,6 @@ public class ControladorProveedores {
     private List<Proveedor> ordenarPorNit() {
         List<Proveedor> listaActual = arbolBase.IND();
 
-        // CORRECCIÓN: Cambiado a ArbolBusqueda y uso de .IND()
         ArbolBusqueda<String> arbol = new ArbolBusqueda<>();
         for (Proveedor p : listaActual) {
             arbol.insertar(p.getNit().toLowerCase());
@@ -226,7 +223,7 @@ public class ControladorProveedores {
         return resultado;
     }
 
-    // ─── CRUD ─────────────────────────────────────────────────────────────────
+    // crud 
     private void guardar() {
         if (!validarCampos())
             return;

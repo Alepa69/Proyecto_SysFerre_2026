@@ -76,7 +76,7 @@ public class ProductoDAO implements IProductoDAO {
         }
     }
 
-    // ── CAMBIO CLAVE: retorna ArbolBusqueda en lugar de List ─────────────────
+    //aqui retornamos el arbol
     public ArbolBusqueda<Producto> listar() throws Exception {
         ArbolBusqueda<Producto> arbol = new ArbolBusqueda<>();
         Connection conn = Conexion.getConexion();
