@@ -1,6 +1,6 @@
 package controlador;
 
-import com.ues.group.arbolb.ArbolBusqueda;
+import Arboles.ArbolBusqueda;
 import com.ues.group.vista.VistaHistorialVentas;
 import dao.VentaDAO;
 import java.util.List;
