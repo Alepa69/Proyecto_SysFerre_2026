@@ -10,24 +10,23 @@ import java.util.List;
 
 /**
  *
- * @author natha
+ * @author alexi
  */
 public class CompraProveedor implements Comparable<CompraProveedor> {
 
     private int idCompra;
     private String categoria;
     private LocalDate fecha;
-    private BigDecimal totalProveedor;
-    private BigDecimal totalCompra;
+    private Double totalProveedor;
+    private Double totalCompra;
     private int idProveedor;
-    private Proveedor proveedor;         // objeto relacionado (opcional)
-    private List<DetalleCompra> detalles; // lista de detalles (opcional)
+    private Proveedor proveedor;
+    private List<DetalleCompra> detalles;
 
     public CompraProveedor() {
     }
 
-    public CompraProveedor(int idCompra, String categoria, LocalDate fecha,
-            BigDecimal totalProveedor, BigDecimal totalCompra, int idProveedor) {
+    public CompraProveedor(int idCompra, String categoria, LocalDate fecha, Double totalProveedor, Double totalCompra, int idProveedor) {
         this.idCompra = idCompra;
         this.categoria = categoria;
         this.fecha = fecha;
@@ -60,19 +59,19 @@ public class CompraProveedor implements Comparable<CompraProveedor> {
         this.fecha = fecha;
     }
 
-    public BigDecimal getTotalProveedor() {
+    public Double getTotalProveedor() {
         return totalProveedor;
     }
 
-    public void setTotalProveedor(BigDecimal totalProveedor) {
+    public void setTotalProveedor(Double totalProveedor) {
         this.totalProveedor = totalProveedor;
     }
 
-    public BigDecimal getTotalCompra() {
+    public Double getTotalCompra() {
         return totalCompra;
     }
 
-    public void setTotalCompra(BigDecimal totalCompra) {
+    public void setTotalCompra(Double totalCompra) {
         this.totalCompra = totalCompra;
     }
 
