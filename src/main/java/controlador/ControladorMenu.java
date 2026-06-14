@@ -72,7 +72,7 @@ public class ControladorMenu {
         VistaProductos vp = new VistaProductos();
         new ControladorProducto(vp);
         vp.setVisible(true);
-        vista.dispose();
+        //vista.dispose();
     }
 
     private void llamarProveedores() {

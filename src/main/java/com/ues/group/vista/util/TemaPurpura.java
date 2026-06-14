@@ -20,14 +20,14 @@ import javax.swing.border.TitledBorder;
  */
 public class TemaPurpura {
 
-    public static final Color FONDO_PRINCIPAL = new Color(237, 231, 246); // EDE7F6
-    public static final Color FONDO_PANEL    = new Color(243, 239, 250); // F3EFFA
-    public static final Color BOTON          = new Color(149, 117, 205); // 9575CD
-    public static final Color BOTON_TEXTO    = Color.WHITE;
-    public static final Color TITULO_TEXTO   = new Color(74, 20, 140);   // 4A148C
-    public static final Color BORDE_TITULO   = new Color(103, 58, 183);  // 673AB7
+    // Paleta de colores Anaranjado y Negro
+    public static final Color FONDO_PRINCIPAL = new Color(255, 243, 224); // Naranja muy pálido/Crema
+    public static final Color FONDO_PANEL    = new Color(255, 224, 178); // Naranja claro
+    public static final Color BOTON          = new Color(255, 102, 0);   // Naranja vibrante
+    public static final Color BOTON_TEXTO    = Color.BLACK;              // Texto negro en botones
+    public static final Color TITULO_TEXTO   = Color.BLACK;              // Títulos en negro
+    public static final Color BORDE_TITULO   = new Color(255, 102, 0);   // Bordes naranja vibrante
 
-    
     public static void aplicar(JFrame frame) {
         frame.getContentPane().setBackground(FONDO_PRINCIPAL);
         aplicarRecursivo(frame.getContentPane());

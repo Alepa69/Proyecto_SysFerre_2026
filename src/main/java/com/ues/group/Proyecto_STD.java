@@ -31,19 +31,19 @@ public class Proyecto_STD {
         } catch (Exception ex) {
         }
 
-        // java.awt.EventQueue.invokeLater(() -> {
-        // VistaLogin login = new VistaLogin();
-        // new ControladorLogin(login);
-        // login.setLocationRelativeTo(null);
-        // login.setVisible(true);
-        // });
+//        java.awt.EventQueue.invokeLater(() -> {
+//            VistaLogin login = new VistaLogin();
+//            new ControladorLogin(login);
+//            login.setLocationRelativeTo(null);
+//            login.setVisible(true);
+//        }); 
 
         /* PARA PROBAR VISTAS INDIVIDUALES */
-        java.awt.EventQueue.invokeLater(() -> {
-            VistaMenuPrincipal login = new VistaMenuPrincipal();
-            new ControladorMenu(login);
-            login.setLocationRelativeTo(null);
-            login.setVisible(true);
-        });
+         java.awt.EventQueue.invokeLater(() -> {
+         VistaMenuPrincipal login = new VistaMenuPrincipal();
+         new ControladorMenu(login);
+         login.setLocationRelativeTo(null);
+         login.setVisible(true);
+         });
     }
 }

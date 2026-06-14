@@ -23,6 +23,7 @@ public class VistaProductos extends javax.swing.JFrame {
         initComponents();
         TemaPurpura.aplicar(this);
         txtId.putClientProperty("JTextField.placeholderText", "Buscar por ID del producto...");
+        this.setLocationRelativeTo(null);
 
     }
 
