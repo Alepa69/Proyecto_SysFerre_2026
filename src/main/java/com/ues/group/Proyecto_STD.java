@@ -2,9 +2,11 @@
 package com.ues.group;
 
 import com.ues.group.vista.VistaLogin;
+import com.ues.group.vista.VistaMenuPrincipal;
 import com.ues.group.vista.VistaProveedores;
 
 import controlador.ControladorLogin;
+import controlador.ControladorMenu;
 import controlador.ControladorProveedores;
 
 /**
@@ -25,20 +27,19 @@ public class Proyecto_STD {
         } catch (Exception ex) {
         }
 
-//        java.awt.EventQueue.invokeLater(() -> {
-//            VistaLogin login = new VistaLogin();
-//            new ControladorLogin(login);
-//            login.setLocationRelativeTo(null);
-//            login.setVisible(true);
-//        });
+        // java.awt.EventQueue.invokeLater(() -> {
+        // VistaLogin login = new VistaLogin();
+        // new ControladorLogin(login);
+        // login.setLocationRelativeTo(null);
+        // login.setVisible(true);
+        // });
 
         /* PARA PROBAR VISTAS INDIVIDUALES */
-
-         java.awt.EventQueue.invokeLater(() -> {
-         VistaProveedores login = new VistaProveedores();
-         new ControladorProveedores(login);
-         login.setLocationRelativeTo(null);
-         login.setVisible(true);
-         });
+        java.awt.EventQueue.invokeLater(() -> {
+            VistaMenuPrincipal login = new VistaMenuPrincipal();
+            new ControladorMenu(login);
+            login.setLocationRelativeTo(null);
+            login.setVisible(true);
+        });
     }
 }

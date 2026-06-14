@@ -117,15 +117,4 @@ public class ProveedoresDAO implements IProveedoresDAO {
         return c;
     }
 
-    // // Mapea un ResultSet a un objeto Proveedor
-    // private Proveedor mapear(ResultSet rs) throws Exception {
-    // Proveedor p = new Proveedor();
-    // p.setIdProveedor(rs.getInt("id_proveedores"));
-    // p.setNombre(rs.getString("nombre"));
-    // p.setNit(rs.getString("nit"));
-    // p.setTelefonos(rs.getString("telefono"));
-    // p.setCorreo(rs.getString("correo"));
-    // p.setDireccion(rs.getString("direccion"));
-    // return p;
-    // }
 }
