@@ -33,7 +33,6 @@ public class ControladorMenu {
         this.vista.getBtnInventario().addActionListener(e -> llamarInventario());
         this.vista.getBtnProductos().addActionListener(e -> llamarProductos());
         this.vista.getBtnProveedores().addActionListener(e -> llamarProveedores());
-        this.vista.getBtnReportes().addActionListener(e -> llamarReportes());
         this.vista.getBtnVentas().addActionListener(e -> llamarVentas());
         this.vista.getBtnSalir().addActionListener(e -> salir());
     }

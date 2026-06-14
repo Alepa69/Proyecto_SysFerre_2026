@@ -4,7 +4,7 @@
  */
 package com.ues.group.vista;
 
-import utileria.TemaPurpura;
+import utileria.TemaAnaranjado;
 
 /**
  *
@@ -19,7 +19,7 @@ public class VistaVentas extends javax.swing.JFrame {
      */
     public VistaVentas() {
         initComponents();
-        TemaPurpura.aplicar(this);
+        TemaAnaranjado.aplicar(this);
         this.setLocationRelativeTo(null);
 
     }

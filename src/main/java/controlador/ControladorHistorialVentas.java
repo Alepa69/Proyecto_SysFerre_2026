@@ -1,8 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-
 package controlador;
 
 import Arboles.ArbolBusqueda;
@@ -34,35 +29,32 @@ public class ControladorHistorialVentas {
     }
 
     private void inicializarTablas() {
-        // Tabla ventas: no editable
         vista.tbVentas.setModel(new javax.swing.table.DefaultTableModel(
-                new Object[][] {},
-                new String[] { "ID", "Cliente", "Fecha", "Total de venta" }) {
+                new Object[][]{},
+                new String[]{"ID", "Cliente", "Fecha", "Total de venta"}
+        ) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         });
 
-        // Tabla detalle: no editable
         vista.tbDetalleVenta.setModel(new javax.swing.table.DefaultTableModel(
-                new Object[][] {},
-                new String[] { "ID Prod.", "Producto", "Cantidad", "Precio Unit.", "Sub Total" }) {
+                new Object[][]{},
+                new String[]{"ID Prod.", "Producto", "Cantidad", "Precio Unit.", "Sub Total"}
+        ) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         });
 
-        // Solo selección de una fila a la vez
         vista.tbVentas.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
     }
 
     private void iniciarEventos() {
         vista.btnRefreshTbVentas.addActionListener(e -> cargarTodasLasVentas());
         vista.btnBuscarVenta.addActionListener(e -> buscarVenta());
-        // vista.btnBack.addActionListener(e -> volverMenu());
-        vista.btnBack.addActionListener(e -> vista.dispose());
 
         vista.tbVentas.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
@@ -71,9 +63,6 @@ public class ControladorHistorialVentas {
         });
     }
 
-    // -------------------------------------------------------------------------
-    // Carga de datos
-    // -------------------------------------------------------------------------
     private void cargarTodasLasVentas() {
         try {
             arbolVentas = ventaDAO.listar();
@@ -94,18 +83,15 @@ public class ControladorHistorialVentas {
                     ? v.getCliente().getNombre() + " " + v.getCliente().getApellido()
                     : "ID " + v.getIdCliente();
 
-            modelo.addRow(new Object[] {
-                    v.getIdVenta(),
-                    nombreCliente,
-                    v.getFecha(),
-                    "$" + v.getTotal().setScale(2)
+            modelo.addRow(new Object[]{
+                v.getIdVenta(),
+                nombreCliente,
+                v.getFecha(),
+                "$" + v.getTotal().setScale(2)
             });
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Búsqueda
-    // -------------------------------------------------------------------------
     private void buscarVenta() {
         String criterio = vista.cbBusquedaVenta.getSelectedItem().toString();
         String texto = vista.txtBuscarVenta.getText().trim().toLowerCase();
@@ -149,14 +135,10 @@ public class ControladorHistorialVentas {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Ver detalle de la venta seleccionada
-    // -------------------------------------------------------------------------
-
     private void verDetalleVenta() {
         int fila = vista.tbVentas.getSelectedRow();
         if (fila < 0) {
-            return;
+            return; 
         }
 
         int idVenta = (int) vista.tbVentas.getValueAt(fila, 0);
@@ -164,35 +146,31 @@ public class ControladorHistorialVentas {
         try {
             List<DetalleVenta> detalles = ventaDAO.listarDetalles(idVenta);
 
-            // Actualizar panel detalle
+            // actualizar panel detalle
             DefaultTableModel modeloDetalle = (DefaultTableModel) vista.tbDetalleVenta.getModel();
             modeloDetalle.setRowCount(0);
             for (DetalleVenta d : detalles) {
-                modeloDetalle.addRow(new Object[] {
-                        d.getIdProducto(),
-                        d.getProducto() != null ? d.getProducto().getDescripcion() : "—",
-                        d.getCantidad(),
-                        "$" + d.getPrecioUnitario().setScale(2),
-                        "$" + d.getSubtotal().setScale(2)
+                modeloDetalle.addRow(new Object[]{
+                    d.getIdProducto(),
+                    d.getProducto() != null ? d.getProducto().getDescripcion() : "—",
+                    d.getCantidad(),
+                    "$" + d.getPrecioUnitario().setScale(2),
+                    "$" + d.getSubtotal().setScale(2)
                 });
             }
 
-            // Actualizar labels del panel detalle
+            // actualizar labels del panel detalle
             String cliente = (String) vista.tbVentas.getValueAt(fila, 1);
-            String total = (String) vista.tbVentas.getValueAt(fila, 3);
+            String total   = (String) vista.tbVentas.getValueAt(fila, 3);
             vista.lblClienteVenta.setText("Cliente: " + cliente);
             vista.lblTotalVenta.setText("TOTAL DE LA VENTA: " + total);
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(vista,
-                    "Error al cargar detalle:\n" + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                "Error al cargar detalle:\n" + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
-    // -------------------------------------------------------------------------
-    // Utilidades
-    // -------------------------------------------------------------------------
 
     private void limpiarPanelDetalle() {
         ((DefaultTableModel) vista.tbDetalleVenta.getModel()).setRowCount(0);

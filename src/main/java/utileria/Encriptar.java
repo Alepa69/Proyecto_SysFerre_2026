@@ -34,8 +34,6 @@ public class Encriptar {
     }
 
     private static String toHexadecimal(byte[] digest) {
-        // CORRECCIÓN: originalmente era " " (espacio), lo que metía un espacio
-        // al inicio de cada hash. Debe ser cadena vacía.
         StringBuilder hash = new StringBuilder();
         for (byte aux : digest) {
             int b = aux & 0xff;
