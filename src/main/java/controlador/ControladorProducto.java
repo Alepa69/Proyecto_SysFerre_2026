@@ -12,12 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 
-
 public class ControladorProducto {
 
     private final VistaProductos vista;
     private final ProductoDAO dao;
-    private ArbolBusqueda<Producto> arbolBase;
+    private ArbolAVL<Producto> arbolBase;
     // arbol principal refleja datos de la bd
 
     public ControladorProducto(VistaProductos vista) {
@@ -199,18 +198,19 @@ public class ControladorProducto {
     private void cargarTabla() {
         try {
             arbolBase = dao.listar();// retornamos un arbolBusqueda con productos ya insertados
-            poblarTabla(arbolBase.IND()); // IND = inorden = ordenado por descripción
+
+            // recorre el arbol en inorden y arma la lista tipada de productos
+            ArrayList<Producto> lista = new ArrayList<>();
+            for (Object obj : arbolBase.IND()) {
+                lista.add((Producto) obj);
+            }
+
+            poblarTabla(lista); // IND = inorden = ordenado por descripción
         } catch (Exception e) {
             JOptionPane.showMessageDialog(vista, "Error al cargar tabla: " + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
-        
-        poblarTabla(lista); // IND() = inorden = ordenado por descripción
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(vista, "Error al cargar tabla: " + e.getMessage(),
-                "Error", JOptionPane.ERROR_MESSAGE);
     }
-}
 
     private void poblarTabla(List<Producto> lista) {
         DefaultTableModel modelo = (DefaultTableModel) vista.tblProductos.getModel();

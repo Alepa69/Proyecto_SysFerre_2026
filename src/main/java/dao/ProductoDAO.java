@@ -77,9 +77,8 @@ public class ProductoDAO implements IProductoDAO {
         }
     }
 
-    //aqui retornamos el arbol
-    public ArbolBusqueda<Producto> listar() throws Exception {
-        ArbolBusqueda<Producto> arbol = new ArbolBusqueda<>();
+    public ArbolAVL<Producto> listar() throws Exception {
+        ArbolAVL<Producto> arbol = new ArbolAVL<>();
         Connection conn = Conexion.getConexion();
         PreparedStatement ps = conn.prepareStatement(SELECT_ALL);
         ResultSet rs = ps.executeQuery();
