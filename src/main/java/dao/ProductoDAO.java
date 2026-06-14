@@ -9,6 +9,8 @@ import java.sql.ResultSet;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+import Arboles.ArbolBusqueda;
 import modelo.Producto;
 
 public class ProductoDAO implements IProductoDAO {
@@ -74,8 +76,9 @@ public class ProductoDAO implements IProductoDAO {
         }
     }
 
-    public List<Producto> listar() throws Exception {
-        List<Producto> lista = new ArrayList<>();
+    // ── CAMBIO CLAVE: retorna ArbolBusqueda en lugar de List ─────────────────
+    public ArbolBusqueda<Producto> listar() throws Exception {
+        ArbolBusqueda<Producto> arbol = new ArbolBusqueda<>();
         Connection conn = Conexion.getConexion();
         PreparedStatement ps = conn.prepareStatement(SELECT_ALL);
         ResultSet rs = ps.executeQuery();
@@ -86,10 +89,10 @@ public class ProductoDAO implements IProductoDAO {
             p.setTipo(rs.getString("tipo"));
             p.setPrecio(rs.getBigDecimal("precio"));
             p.setStock(rs.getInt("stock"));
-            lista.add(p);
+            arbol.insertar(p); // se ordena automáticamente por compareTo (descripcion)
         }
         conn.close();
-        return lista;
+        return arbol;
     }
 
     public Producto buscar(int idProducto) throws Exception {

@@ -63,7 +63,7 @@ public class ControladorMenu {
     private void llamarInventario() {
         VistaInventario vi = new VistaInventario();
         // new ControladorInventario(vi);
-        vi.setVisible(true);
+        // vi.setVisible(true);
         // vista.dispose();
     }
 
@@ -71,14 +71,14 @@ public class ControladorMenu {
         VistaProductos vp = new VistaProductos();
         new ControladorProducto(vp);
         vp.setVisible(true);
-        // vista.dispose();
+        vista.dispose();
     }
 
     private void llamarProveedores() {
         VistaProveedores vp = new VistaProveedores();
-        // new ControladorProveedores(vp);
+        new ControladorProveedores(vp);
         vp.setVisible(true);
-        // vista.dispose();
+        vista.dispose();
     }
 
     private void llamarReportes() {
