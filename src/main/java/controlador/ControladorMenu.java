@@ -5,12 +5,13 @@
 package controlador;
 
 import com.ues.group.vista.VistaClientes;
-import com.ues.group.vista.VistaCompras;
+import com.ues.group.vista.VistaComprasold;
 import com.ues.group.vista.VistaEmpleados;
 import com.ues.group.vista.VistaInventario;
 import com.ues.group.vista.VistaMenuPrincipal;
 import com.ues.group.vista.VistaProductos;
 import com.ues.group.vista.VistaProveedores;
+import com.ues.group.vista.VistaReabastecimiento;
 import com.ues.group.vista.VistaReporte;
 import com.ues.group.vista.VistaVentas;
 
@@ -47,8 +48,8 @@ public class ControladorMenu {
     }
 
     private void llamarCompras() {
-        VistaCompras vc = new VistaCompras();
-        // new ControladorCompras(vc);
+        VistaReabastecimiento vc = new VistaReabastecimiento();
+        new ControladorReabastecimiento(vc);
         vc.setVisible(true);
         // vista.dispose();
     }
