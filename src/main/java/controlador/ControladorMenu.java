@@ -39,60 +39,53 @@ public class ControladorMenu {
     }
 
     // Métodos para llamar a cada submenu
+    // Métodos para llamar a cada submenu
     private void llamarClientes() {
-        VistaClientes vc = new VistaClientes();
-        new ControladorClientes(vc);
-        vc.setVisible(true);
-        // vista.dispose();
+        VistaClientes vista = new VistaClientes();
+        ControladorClientes control = new ControladorClientes(vista);
+        vista.setVisible(true);
     }
 
     private void llamarCompras() {
-        VistaReabastecimiento vc = new VistaReabastecimiento();
-        new ControladorReabastecimiento(vc);
-        vc.setVisible(true);
-        // vista.dispose();
+        VistaReabastecimiento vista = new VistaReabastecimiento();
+        ControladorReabastecimiento control = new ControladorReabastecimiento(vista);
+        vista.setVisible(true);
     }
 
     private void llamarEmpleados() {
-        VistaEmpleados ve = new VistaEmpleados();
-        // new ControladorEmpleados(ve);
-        ve.setVisible(true);
-        // vista.dispose();
+        VistaEmpleados vista = new VistaEmpleados();
+        ControladorEmpleado control = new ControladorEmpleado(vista);
+        vista.setVisible(true);
     }
 
     private void llamarInventario() {
-        VistaInventario vi = new VistaInventario();
-        new ControladorInventario(vi);
-        vi.setVisible(true);
-        // vista.dispose();
+        VistaInventario vista = new VistaInventario();
+        ControladorInventario control = new ControladorInventario(vista);
+        vista.setVisible(true);
     }
 
     private void llamarProductos() {
-        VistaProductos vp = new VistaProductos();
-        new ControladorProducto(vp);
-        vp.setVisible(true);
-        //vista.dispose();
+        VistaProductos vista = new VistaProductos();
+        ControladorProducto control = new ControladorProducto(vista);
+        vista.setVisible(true);
     }
 
     private void llamarProveedores() {
-        VistaProveedores vp = new VistaProveedores();
-        new ControladorProveedores(vp);
-        vp.setVisible(true);
-        vista.dispose();
+        VistaProveedores vista = new VistaProveedores();
+        ControladorProveedores control = new ControladorProveedores(vista);
+        vista.setVisible(true);
     }
 
     private void llamarReportes() {
-        VistaReporte vr = new VistaReporte();
-        // new ControladorReporte(vr);
-        vr.setVisible(true);
-        // vista.dispose();
+        VistaReporte vista = new VistaReporte();
+        // ControladorReporte control = new ControladorReporte(vista);
+        vista.setVisible(true);
     }
 
     private void llamarVentas() {
-        VistaVentas vv = new VistaVentas();
-        new ControladorVentas(vv);
-        vv.setVisible(true);
-        // vista.dispose();
+        VistaVentas vista = new VistaVentas();
+        ControladorVentas control = new ControladorVentas(vista);
+        vista.setVisible(true);
     }
 
     private void salir() {

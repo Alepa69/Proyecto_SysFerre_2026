@@ -11,19 +11,19 @@ import modelo.Empleado;
 
 public class EmpleadoDAO implements IEmpleadoDAO {
 
-    private static final String INSERT_EMPLEADO = "INSERT INTO empleados (nombres, apellidos, telefono, correo, direccion) VALUES (?, ?, ?, ?, ?)";
+    private static final String INSERT_EMPLEADO = "INSERT INTO empleado (nombres, apellidos, telefono, correo, direccion) VALUES (?, ?, ?, ?, ?)";
     private static final String INSERT_USUARIO = "INSERT INTO usuarios (usuario, contrasena, id_empleado) VALUES (?, ?, ?)";
     private static final String SELECT_ALL = "SELECT e.id_empleado, e.nombres, e.apellidos, e.telefono, e.correo, e.direccion, "
             + "u.usuario, u.contrasena "
-            + "FROM empleados e "
+            + "FROM empleado e "
             + "LEFT JOIN usuarios u ON u.id_empleado = e.id_empleado "
             + "ORDER BY e.id_empleado";
     private static final String SELECT_ID = SELECT_ALL.replace("ORDER BY e.id_empleado", "WHERE e.id_empleado = ?");
     private static final String SELECT_USUARIO_ID = "SELECT id_usuario FROM usuarios WHERE id_empleado = ?";
-    private static final String UPDATE_EMPLEADO = "UPDATE empleados SET nombres = ?, apellidos = ?, telefono = ?, correo = ?, direccion = ? WHERE id_empleado = ?";
+    private static final String UPDATE_EMPLEADO = "UPDATE empleado SET nombres = ?, apellidos = ?, telefono = ?, correo = ?, direccion = ? WHERE id_empleado = ?";
     private static final String UPDATE_USUARIO = "UPDATE usuarios SET usuario = ?, contrasena = ? WHERE id_empleado = ?";
     private static final String DELETE_USUARIO = "DELETE FROM usuarios WHERE id_empleado = ?";
-    private static final String DELETE_EMPLEADO = "DELETE FROM empleados WHERE id_empleado = ?";
+    private static final String DELETE_EMPLEADO = "DELETE FROM empleado WHERE id_empleado = ?";
 
     @Override
     public void insertar(Empleado empleado) throws Exception {
