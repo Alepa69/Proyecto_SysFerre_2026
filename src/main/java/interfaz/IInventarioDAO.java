@@ -5,6 +5,8 @@
 package interfaz;
 
 import java.util.List;
+
+import Arboles.ArbolBusqueda;
 import modelo.Inventario;
 
 /**
@@ -12,7 +14,6 @@ import modelo.Inventario;
  * @author mendo
  */
 public interface IInventarioDAO {
-
     void insertar(Inventario i) throws Exception;
 
     void actualizar(Inventario i) throws Exception;
@@ -23,7 +24,7 @@ public interface IInventarioDAO {
 
     Inventario buscar(int idInventario) throws Exception;
 
-    List<Inventario> buscarPorNombre(String texto) throws Exception;
+    ArbolBusqueda<Inventario> buscarPorNombre(String texto) throws Exception;
 
-    List<Inventario> listarOrdenado(String criterio) throws Exception;
+    ArbolBusqueda<Inventario> listarOrdenado(String criterio) throws Exception;
 }

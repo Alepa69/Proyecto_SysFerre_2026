@@ -19,6 +19,7 @@ public class Inventario implements Comparable<Inventario> {
     private int stockDisponible;
     private int idProducto;
     private Producto producto; // objeto relacionado (opcional)
+    private String criterioOrden = "ID"; // criterio usado al ordenar/buscar en el ArbolBusqueda
 
     public Inventario() {
     }
@@ -89,6 +90,14 @@ public class Inventario implements Comparable<Inventario> {
         this.producto = producto;
     }
 
+    public String getCriterioOrden() {
+        return criterioOrden;
+    }
+
+    public void setCriterioOrden(String criterioOrden) {
+        this.criterioOrden = (criterioOrden == null || criterioOrden.isEmpty()) ? "ID" : criterioOrden;
+    }
+
     @Override
     public String toString() {
         return nombreProducto;
@@ -96,7 +105,34 @@ public class Inventario implements Comparable<Inventario> {
 
     @Override
     public int compareTo(Inventario o) {
-        Inventario actual = this;
-        return actual.getNombreProducto().compareTo(o.getNombreProducto());
+        int c;
+        switch (criterioOrden == null ? "ID" : criterioOrden) {
+            case "Nombre A-Z":
+                c = compararTexto(this.nombreProducto, o.nombreProducto);
+                break;
+            case "Precio":
+                c = compararPrecio(this.precioUnitario, o.precioUnitario);
+                break;
+            case "Stock Ascendente":
+            case "Stock Descendente":
+                c = Integer.compare(this.stockDisponible, o.stockDisponible);
+                break;
+            case "ID":
+            default:
+                c = Integer.compare(this.idInventario, o.idInventario);
+        }
+        // Desempate estable por ID para no perder registros con valores repetidos
+        if (c == 0) {
+            c = Integer.compare(this.idInventario, o.idInventario);
+        }
+        return c;
+    }
+
+    private int compararTexto(String a, String b) {
+        return (a == null ? "" : a).compareToIgnoreCase(b == null ? "" : b);
+    }
+
+    private int compararPrecio(BigDecimal a, BigDecimal b) {
+        return (a == null ? BigDecimal.ZERO : a).compareTo(b == null ? BigDecimal.ZERO : b);
     }
 }
