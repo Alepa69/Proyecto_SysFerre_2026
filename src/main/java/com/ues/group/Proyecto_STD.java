@@ -1,13 +1,17 @@
 
 package com.ues.group;
 
+import com.ues.group.vista.VistaInventario;
 import com.ues.group.vista.VistaLogin;
 import com.ues.group.vista.VistaMenuPrincipal;
 import com.ues.group.vista.VistaProveedores;
+import com.ues.group.vista.VistaVentas;
 
+import controlador.ControladorInventario;
 import controlador.ControladorLogin;
 import controlador.ControladorMenu;
 import controlador.ControladorProveedores;
+import controlador.ControladorVentas;
 
 /**
  *
