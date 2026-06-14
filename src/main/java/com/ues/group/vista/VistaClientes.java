@@ -4,7 +4,6 @@
  */
 package com.ues.group.vista;
 
-import com.ues.group.vista.util.TemaPurpura;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -12,6 +11,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import utileria.TemaPurpura;
 
 /**
  *
