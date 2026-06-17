@@ -21,6 +21,7 @@ public class VistaLogin extends javax.swing.JFrame {
         initComponents();
         TemaPurpura.aplicar(this);
         this.setLocationRelativeTo(null);
+        this.setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
 
     }
 

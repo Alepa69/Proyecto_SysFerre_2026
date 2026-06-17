@@ -11,7 +11,6 @@ import com.ues.group.vista.VistaMenuPrincipal;
 import com.ues.group.vista.VistaProductos;
 import com.ues.group.vista.VistaProveedores;
 import com.ues.group.vista.VistaReabastecimiento;
-import com.ues.group.vista.VistaReporte;
 import com.ues.group.vista.VistaVentas;
 
 /**
@@ -33,7 +32,6 @@ public class ControladorMenu {
         this.vista.getBtnInventario().addActionListener(e -> llamarInventario());
         this.vista.getBtnProductos().addActionListener(e -> llamarProductos());
         this.vista.getBtnProveedores().addActionListener(e -> llamarProveedores());
-        this.vista.getBtnReportes().addActionListener(e -> llamarReportes());
         this.vista.getBtnVentas().addActionListener(e -> llamarVentas());
         this.vista.getBtnSalir().addActionListener(e -> salir());
     }
@@ -76,11 +74,6 @@ public class ControladorMenu {
         vista.setVisible(true);
     }
 
-    private void llamarReportes() {
-        VistaReporte vista = new VistaReporte();
-        // ControladorReporte control = new ControladorReporte(vista);
-        vista.setVisible(true);
-    }
 
     private void llamarVentas() {
         VistaVentas vista = new VistaVentas();
